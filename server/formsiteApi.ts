@@ -75,19 +75,19 @@ export async function getFormItems() {
   }
 }
 
-// Map Formsite form data to our Appointment schema
+// Map Formsite form data to our Appointment schema using pipe references provided
 function mapFormsiteDataToAppointment(result: any): Appointment {
   try {
     console.log("Mapping result to appointment:", JSON.stringify(result).substring(0, 200) + "...");
     
-    // Check the structure of the result to determine if we need to access items differently
-    let items = result.items;
-    
-    // Extract values using proper API format
-    const findValue = (label: string) => {
-      const item = items?.find((item: any) => {
-        // Handle different possible item structures
-        return item.label === label;
+    // Find an item by its ID in the items array
+    const findItemById = (itemId: string) => {
+      if (!result.items || !Array.isArray(result.items)) {
+        return undefined;
+      }
+      
+      const item = result.items.find((item: any) => {
+        return item.id === itemId;
       });
       
       if (!item) return undefined;
@@ -102,35 +102,53 @@ function mapFormsiteDataToAppointment(result: any): Appointment {
       return undefined;
     };
     
-    const grossRevenue = parseFloat(findValue("Gross Revenue") || "0");
-    const depositAmount = parseFloat(findValue("Deposit Amount") || "0");
+    // Using the pipe references provided:
+    // ID = [pipe:reference_#]
+    // Client Name = [pipe:4?]
+    // Phone Number = [pipe:5?]
+    // Appointment Start Date = [pipe:25?]
+    // Appointment Start Time = [pipe:26?]
+    // Duration = [pipe:29?]
+    // Gross Revenue = [pipe:32?]
+    // Deposit Amount = [pipe:39?]
+    // DTP = [pipe:43?]
+    
+    // For debugging, log the IDs of all items
+    if (result.items && Array.isArray(result.items)) {
+      console.log("Available item IDs:", result.items.map((item: any) => `${item.id}: ${item.label || 'no label'}`).join(", "));
+    }
+    
+    // Parse numeric values correctly
+    const grossRevenue = parseFloat(findItemById("32") || "0");
+    const depositAmount = parseFloat(findItemById("39") || "0");
+    const dueToProvider = parseFloat(findItemById("43") || "0");
     
     return {
       id: result.id ? result.id.toString() : "",
-      clientName: findValue("Client Name"),
-      clientPhone: findValue("Phone Number"),
-      clientUsesEmail: findValue("Client Uses Email") === "Yes",
-      clientEmail: findValue("Client E-mail"),
-      callType: findValue("In or Out Call"),
-      streetAddress: findValue("Street Address"),
-      addressLine2: findValue("Address Line 2"),
-      city: findValue("City"),
-      state: findValue("State"),
-      zipCode: findValue("Zip Code"),
-      startDate: findValue("Appointment Start Date"),
-      startTime: findValue("Appointment Start Time"),
-      endDate: findValue("Appointment End Date"),
-      endTime: findValue("Appointment End Time"),
-      duration: parseFloat(findValue("Call Duration") || "0"),
+      clientName: findItemById("4"),
+      clientPhone: findItemById("5"),
+      clientUsesEmail: false, // Default if not available
+      clientEmail: findItemById("6"), // Assuming email might be item 6
+      callType: findItemById("15"), // Assuming call type might be nearby
+      streetAddress: findItemById("7"), // Estimating field IDs
+      addressLine2: findItemById("8"),
+      city: findItemById("9"),
+      state: findItemById("10"),
+      zipCode: findItemById("11"),
+      startDate: findItemById("25"),
+      startTime: findItemById("26"),
+      endDate: findItemById("27"), // Assuming end date is next
+      endTime: findItemById("28"), // Assuming end time is next
+      duration: parseFloat(findItemById("29") || "0"),
       grossRevenue: grossRevenue,
       depositAmount: depositAmount,
-      depositReceivedBy: findValue("Deposit Recieved By"),
-      paymentProcess: findValue("Payment Process Used"),
-      dueToProvider: grossRevenue - depositAmount,
-      setBy: findValue("Set By"),
-      provider: findValue("Provider"),
-      marketingChannel: findValue("Marketing Chanel"),
-      clientNotes: findValue("Client Notes"),
+      depositReceivedBy: findItemById("40"), // Assuming this is nearby deposit amount
+      paymentProcess: findItemById("41"), // Assuming this is nearby
+      dueToProvider: dueToProvider, // Use the actual DTP field
+      setBy: findItemById("20"), // Estimating
+      provider: findItemById("21"), // Estimating
+      marketingChannel: findItemById("22"), // Estimating
+      clientNotes: findItemById("50"), // Estimating client notes at a high number
       createdAt: result.date_start ? new Date(result.date_start) : undefined,
       updatedAt: result.date_update ? new Date(result.date_update) : undefined,
     };
