@@ -102,53 +102,153 @@ function mapFormsiteDataToAppointment(result: any): Appointment {
       return undefined;
     };
     
-    // Using the pipe references provided:
-    // ID = [pipe:reference_#]
-    // Client Name = [pipe:4?]
-    // Phone Number = [pipe:5?]
-    // Appointment Start Date = [pipe:25?]
-    // Appointment Start Time = [pipe:26?]
-    // Duration = [pipe:29?]
-    // Gross Revenue = [pipe:32?]
-    // Deposit Amount = [pipe:39?]
-    // DTP = [pipe:43?]
-    
     // For debugging, log the IDs of all items
     if (result.items && Array.isArray(result.items)) {
       console.log("Available item IDs:", result.items.map((item: any) => `${item.id}: ${item.label || 'no label'}`).join(", "));
     }
     
+    // Using the complete pipe references provided:
+    // Set By = [pipe:0?]
+    // Provider = [pipe:1?]
+    // Marketing Chanel = [pipe:2?]
+    // Client Name = [pipe:4?]
+    // Phone Number = [pipe:5?]
+    // Client Uses Email = [pipe:7?]
+    // Client E-mail = [pipe:24?]
+    // In or Out Call = [pipe:17?]
+    // Street Address = [pipe:10?]
+    // Address Line 2 = [pipe:11?]
+    // City = [pipe:12?]
+    // State = [pipe:13?]
+    // Zip Code = [pipe:14?]
+    // Outcall Details = [pipe:21?]
+    // Appointment Start Date = [pipe:25?]
+    // Appointment Start Time = [pipe:26?]
+    // Appointment End Date = [pipe:27?]
+    // Appointment End Time = [pipe:28?]
+    // Call Duration = [pipe:29?]
+    // Gross Revenue = [pipe:32?]
+    // Travel = [pipe:34?]
+    // Hosting Expense = [pipe:36?]
+    // IN/OUT Goes to = [pipe:37?]
+    // Total Expenses Calculated = [pipe:38?]
+    // Deposit Amount = [pipe:39?]
+    // Deposit Amount Calculated = [pipe:40?]
+    // Deposit Recieved By: = [pipe:41?]
+    // Payment Process Used = [pipe:42]
+    // Due To Provider Upon Arrival = [pipe:43?]
+    // Leave Notes On This Client = [pipe:44]
+    // Client Notes = [pipe:45?]
+    // Disposition Status = [pipe:49?]
+    // Total Collected In Cash = [pipe:51?]
+    // Total Collected Digitally = [pipe:52?]
+    // Total Collected = [pipe:53?]
+    // Payment Processor = [pipe:55?]
+    // Upload Photos/Screenshots of Payments = [pipe:54?]
+    // Notes on Payments = [pipe:56?]
+    // Would you be open to seeing this client again? = [pipe:57]
+    // Please contribute a few notes about how your call went to help you remember the next time you see... = [pipe:58?]
+    // Updated Appointment Start Date = [pipe:61?]
+    // Updated Appointment Start Time = [pipe:62?]
+    // Updated Appointment End Date = [pipe:63?]
+    // Updated Appointment End Time = [pipe:64?]
+    // Who Canceled = [pipe:67?]
+    // Cancelation Details = [pipe:68?]
+    // App-ID = [pipe:59?]
+    // Reference # = [pipe:reference_#]
+    // Repetition # = [pipe:repetition_#]
+    // Scoring Total = [pipe:total_score]
+    // Scoring Max = [pipe:max_score]
+    // Order Total = [pipe:order_total]
+    // Save & Return Username = [pipe:save_return_user]
+    // Save & Return Email = [pipe:save_return_email]
+    
     // Parse numeric values correctly
     const grossRevenue = parseFloat(findItemById("32") || "0");
     const depositAmount = parseFloat(findItemById("39") || "0");
     const dueToProvider = parseFloat(findItemById("43") || "0");
+    const duration = parseFloat(findItemById("29") || "0");
+    const totalExpenses = parseFloat(findItemById("38") || "0");
+    const totalCollected = parseFloat(findItemById("53") || "0");
     
+    // Create a complete appointment object with all available data
     return {
       id: result.id ? result.id.toString() : "",
+      // Basic client info
+      setBy: findItemById("0"),
+      provider: findItemById("1"),
+      marketingChannel: findItemById("2"),
       clientName: findItemById("4"),
       clientPhone: findItemById("5"),
-      clientUsesEmail: false, // Default if not available
-      clientEmail: findItemById("6"), // Assuming email might be item 6
-      callType: findItemById("15"), // Assuming call type might be nearby
-      streetAddress: findItemById("7"), // Estimating field IDs
-      addressLine2: findItemById("8"),
-      city: findItemById("9"),
-      state: findItemById("10"),
-      zipCode: findItemById("11"),
+      clientUsesEmail: findItemById("7") === "Yes",
+      clientEmail: findItemById("24"),
+      
+      // Location info
+      callType: findItemById("17"),
+      streetAddress: findItemById("10"),
+      addressLine2: findItemById("11"),
+      city: findItemById("12"),
+      state: findItemById("13"),
+      zipCode: findItemById("14"),
+      outcallDetails: findItemById("21"),
+      
+      // Appointment time info
       startDate: findItemById("25"),
       startTime: findItemById("26"),
-      endDate: findItemById("27"), // Assuming end date is next
-      endTime: findItemById("28"), // Assuming end time is next
-      duration: parseFloat(findItemById("29") || "0"),
+      endDate: findItemById("27"),
+      endTime: findItemById("28"),
+      duration: duration,
+      
+      // Financial info
       grossRevenue: grossRevenue,
+      travel: findItemById("34"),
+      hostingExpense: findItemById("36"),
+      inOutGoesTo: findItemById("37"),
+      totalExpenses: totalExpenses,
       depositAmount: depositAmount,
-      depositReceivedBy: findItemById("40"), // Assuming this is nearby deposit amount
-      paymentProcess: findItemById("41"), // Assuming this is nearby
-      dueToProvider: dueToProvider, // Use the actual DTP field
-      setBy: findItemById("20"), // Estimating
-      provider: findItemById("21"), // Estimating
-      marketingChannel: findItemById("22"), // Estimating
-      clientNotes: findItemById("50"), // Estimating client notes at a high number
+      depositCalculated: findItemById("40"),
+      depositReceivedBy: findItemById("41"),
+      paymentProcess: findItemById("42"),
+      dueToProvider: dueToProvider,
+      
+      // Notes and status
+      leaveNotes: findItemById("44"),
+      clientNotes: findItemById("45"),
+      dispositionStatus: findItemById("49"),
+      
+      // Payment details
+      totalCollectedCash: findItemById("51"),
+      totalCollectedDigital: findItemById("52"),
+      totalCollected: totalCollected,
+      paymentProcessor: findItemById("55"),
+      paymentPhotos: findItemById("54"),
+      paymentNotes: findItemById("56"),
+      
+      // Client relationship
+      seeAgain: findItemById("57"),
+      callNotes: findItemById("58"),
+      
+      // Updates and cancellations
+      updatedStartDate: findItemById("61"),
+      updatedStartTime: findItemById("62"),
+      updatedEndDate: findItemById("63"),
+      updatedEndTime: findItemById("64"),
+      whoCanceled: findItemById("67"),
+      cancellationDetails: findItemById("68"),
+      
+      // Internal IDs
+      appId: findItemById("59"),
+      referenceNumber: result.reference_number || "",
+      repetitionNumber: result.repetition_number || "",
+      
+      // Meta fields
+      scoringTotal: result.total_score || "",
+      scoringMax: result.max_score || "",
+      orderTotal: result.order_total || "",
+      saveReturnUsername: result.save_return_user || "",
+      saveReturnEmail: result.save_return_email || "",
+      
+      // System timestamps
       createdAt: result.date_start ? new Date(result.date_start) : undefined,
       updatedAt: result.date_update ? new Date(result.date_update) : undefined,
     };
