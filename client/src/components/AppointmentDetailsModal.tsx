@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
 import { useLocation } from "wouter";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 
 interface AppointmentDetailsModalProps {
   appointmentId: string;
@@ -55,15 +57,46 @@ export default function AppointmentDetailsModal({
     // Navigate to the details page
     navigate(`/appointments/${appointmentId}`);
   };
+  
+  // Helper function to display data field with label
+  const DataField = ({ label, value, className = "" }: { label: string; value?: string | number | null; className?: string }) => {
+    if (value === undefined || value === null || value === "") return null;
+    
+    return (
+      <div className={className}>
+        <p className="text-sm text-muted-foreground mb-1">{label}</p>
+        <p className="font-medium break-words">{value}</p>
+      </div>
+    );
+  };
+
+  // Helper function to display currency values
+  const CurrencyField = ({ label, value, highlight = false }: { label: string; value?: number | null; highlight?: boolean }) => {
+    if (value === undefined || value === null) return null;
+    
+    const textClass = highlight ? "font-mono text-[hsl(var(--secondary))] font-medium" : "font-mono";
+    
+    return (
+      <div>
+        <p className="text-sm text-muted-foreground mb-1">{label}</p>
+        <p className={textClass}>
+          {formatCurrency(value)}
+        </p>
+      </div>
+    );
+  };
 
   return createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
       <div 
         ref={modalRef}
-        className="bg-[hsl(var(--surface))] rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-[hsl(var(--surface))] rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
       >
         <div className="px-6 py-4 border-b border-border flex justify-between items-center sticky top-0 bg-[hsl(var(--surface))] z-10">
-          <h3 className="text-lg font-medium">Appointment Details</h3>
+          <h3 className="text-lg font-medium">
+            Appointment Details
+            {appointment?.clientName && ` - ${appointment.clientName}`}
+          </h3>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
@@ -120,135 +153,235 @@ export default function AppointmentDetailsModal({
           </div>
         ) : appointment ? (
           <div className="p-6">
-            {/* Client Information Section */}
-            <div className="mb-6">
-              <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
-                Client Information
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Tabs defaultValue="basic" className="w-full">
+              <TabsList className="mb-4">
+                <TabsTrigger value="basic">Basic Info</TabsTrigger>
+                <TabsTrigger value="financial">Financial</TabsTrigger>
+                <TabsTrigger value="notes">Notes</TabsTrigger>
+                <TabsTrigger value="updates">Updates</TabsTrigger>
+                <TabsTrigger value="meta">Meta</TabsTrigger>
+              </TabsList>
+              
+              {/* Basic Info Tab */}
+              <TabsContent value="basic" className="space-y-6">
+                {/* Booking Info */}
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Client Name</p>
-                  <p className="font-medium">{appointment.clientName}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Phone Number</p>
-                  <p className="font-mono">{appointment.clientPhone}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Email Status</p>
-                  <p className="flex items-center">
-                    {appointment.clientUsesEmail ? (
-                      <>
-                        <span className="w-4 h-4 rounded-full bg-[hsl(var(--success))] inline-block mr-1.5" />
-                        Uses Email
-                      </>
-                    ) : (
-                      <>
-                        <span className="w-4 h-4 rounded-full bg-muted inline-block mr-1.5" />
-                        Does Not Use Email
-                      </>
-                    )}
-                  </p>
-                </div>
-                {appointment.clientUsesEmail && appointment.clientEmail && (
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Email Address</p>
-                    <p className="font-mono">{appointment.clientEmail}</p>
+                  <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
+                    Booking Information
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <DataField label="Set By" value={appointment.setBy} />
+                    <DataField label="Provider" value={appointment.provider} />
+                    <DataField label="Marketing Channel" value={appointment.marketingChannel} />
                   </div>
-                )}
-              </div>
-            </div>
-            
-            {/* Appointment Location Section */}
-            <div className="mb-6">
-              <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
-                Appointment Location
-              </h4>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Call Type</p>
-                <p className="font-medium">{appointment.callType}</p>
-              </div>
-              {appointment.streetAddress && (
-                <div className="mt-3">
-                  <p className="text-sm text-muted-foreground mb-1">Address</p>
-                  <p>{appointment.streetAddress}</p>
-                  {appointment.addressLine2 && <p>{appointment.addressLine2}</p>}
-                  <p>
-                    <span>{appointment.city}</span>,{" "}
-                    <span>{appointment.state}</span>{" "}
-                    <span className="font-mono">{appointment.zipCode}</span>
-                  </p>
                 </div>
-              )}
-            </div>
-            
-            {/* Appointment Date & Time Section */}
-            <div className="mb-6">
-              <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
-                Appointment Date & Time
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                {/* Client Information */}
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Start Date & Time</p>
-                  <p>{appointment.startDate} {appointment.startTime}</p>
+                  <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
+                    Client Information
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <DataField label="Client Name" value={appointment.clientName} />
+                    <DataField label="Phone Number" value={appointment.clientPhone} />
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Email Status</p>
+                      <p className="flex items-center">
+                        {appointment.clientUsesEmail ? (
+                          <>
+                            <span className="w-4 h-4 rounded-full bg-[hsl(var(--success))] inline-block mr-1.5" />
+                            Uses Email
+                          </>
+                        ) : (
+                          <>
+                            <span className="w-4 h-4 rounded-full bg-muted inline-block mr-1.5" />
+                            Does Not Use Email
+                          </>
+                        )}
+                      </p>
+                    </div>
+                    {appointment.clientUsesEmail && appointment.clientEmail && (
+                      <DataField label="Email Address" value={appointment.clientEmail} />
+                    )}
+                  </div>
                 </div>
+                
+                {/* Location Information */}
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">End Date & Time</p>
-                  <p>{appointment.endDate} {appointment.endTime}</p>
+                  <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
+                    Location Information
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <DataField label="Call Type" value={appointment.callType} />
+                    <DataField label="Outcall Details" value={appointment.outcallDetails} />
+                  </div>
+                  
+                  {appointment.streetAddress && (
+                    <div className="mt-3">
+                      <p className="text-sm text-muted-foreground mb-1">Address</p>
+                      <p>{appointment.streetAddress}</p>
+                      {appointment.addressLine2 && <p>{appointment.addressLine2}</p>}
+                      <p>
+                        {appointment.city && <span>{appointment.city}</span>}
+                        {appointment.state && <span>, {appointment.state}</span>}
+                        {appointment.zipCode && <span> <span className="font-mono">{appointment.zipCode}</span></span>}
+                      </p>
+                    </div>
+                  )}
                 </div>
+                
+                {/* Date & Time Information */}
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Duration</p>
-                  <p>{appointment.duration} hours</p>
+                  <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
+                    Appointment Time
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Start Date & Time</p>
+                      <p>{appointment.startDate} {appointment.startTime}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">End Date & Time</p>
+                      <p>{appointment.endDate} {appointment.endTime}</p>
+                    </div>
+                    <DataField label="Duration" value={appointment.duration ? `${appointment.duration} hours` : undefined} />
+                  </div>
                 </div>
-              </div>
-            </div>
-            
-            {/* Financial Details Section */}
-            <div className="mb-6">
-              <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
-                Financial Details
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              </TabsContent>
+              
+              {/* Financial Tab */}
+              <TabsContent value="financial" className="space-y-6">
+                {/* Main Financial Information */}
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Gross Revenue</p>
-                  <p className="font-mono text-[hsl(var(--secondary))] font-medium">
-                    {formatCurrency(appointment.grossRevenue || 0)}
-                  </p>
+                  <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
+                    Revenue
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <CurrencyField label="Gross Revenue" value={appointment.grossRevenue} highlight={true} />
+                    <CurrencyField label="Deposit Amount" value={appointment.depositAmount} />
+                    <CurrencyField label="Due To Provider" value={appointment.dueToProvider} highlight={true} />
+                  </div>
                 </div>
+                
+                {/* Payment Methods */}
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Deposit Amount</p>
-                  <p className="font-mono">
-                    {formatCurrency(appointment.depositAmount || 0)}
-                  </p>
+                  <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
+                    Payment Methods
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <DataField label="Deposit Received By" value={appointment.depositReceivedBy} />
+                    <DataField label="Payment Process" value={appointment.paymentProcess} />
+                    <DataField label="Payment Processor" value={appointment.paymentProcessor} />
+                  </div>
                 </div>
+                
+                {/* Collection Details */}
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Deposit Received By</p>
-                  <p>{appointment.depositReceivedBy}</p>
+                  <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
+                    Expense Details
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <DataField label="Travel" value={appointment.travel} />
+                    <DataField label="Hosting Expense" value={appointment.hostingExpense} />
+                    <DataField label="IN/OUT Goes To" value={appointment.inOutGoesTo} />
+                    <CurrencyField label="Total Expenses" value={appointment.totalExpenses} />
+                  </div>
                 </div>
+              </TabsContent>
+              
+              {/* Notes Tab */}
+              <TabsContent value="notes" className="space-y-6">
+                {/* Client Notes */}
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Payment Process</p>
-                  <p>{appointment.paymentProcess}</p>
+                  <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
+                    Client Notes
+                  </h4>
+                  <div className="grid grid-cols-1 gap-4">
+                    <DataField 
+                      label="Client Notes" 
+                      value={appointment.clientNotes} 
+                      className="whitespace-pre-line"
+                    />
+                  </div>
                 </div>
+                
+                {/* Call Notes */}
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Due To Provider</p>
-                  <p className="font-mono text-[hsl(var(--secondary))] font-medium">
-                    {formatCurrency(appointment.dueToProvider || 0)}
-                  </p>
+                  <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
+                    Call Experience
+                  </h4>
+                  <div className="grid grid-cols-1 gap-4">
+                    <DataField label="Would you be open to seeing this client again?" value={appointment.seeAgain} />
+                    <DataField 
+                      label="Notes about how your call went"
+                      value={appointment.callNotes}
+                      className="whitespace-pre-line"
+                    />
+                  </div>
                 </div>
-              </div>
-            </div>
-            
-            {/* Notes Section */}
-            {appointment.clientNotes && (
-              <div>
-                <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
-                  Client Notes
-                </h4>
-                <p className="text-sm whitespace-pre-line">
-                  {appointment.clientNotes}
-                </p>
-              </div>
-            )}
+                
+                {/* Status Info */}
+                <div>
+                  <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
+                    Disposition Status
+                  </h4>
+                  <DataField label="Status" value={appointment.dispositionStatus} />
+                </div>
+              </TabsContent>
+              
+              {/* Updates Tab */}
+              <TabsContent value="updates" className="space-y-6">
+                {/* Updated Times */}
+                <div>
+                  <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
+                    Updated Appointment Time
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Updated Start</p>
+                      <p>{appointment.updatedStartDate} {appointment.updatedStartTime}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Updated End</p>
+                      <p>{appointment.updatedEndDate} {appointment.updatedEndTime}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Cancellation Info */}
+                <div>
+                  <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
+                    Cancellation Information
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <DataField label="Who Canceled" value={appointment.whoCanceled} />
+                    <DataField label="Cancelation Details" value={appointment.cancellationDetails} />
+                  </div>
+                </div>
+              </TabsContent>
+              
+              {/* Meta Tab */}
+              <TabsContent value="meta" className="space-y-6">
+                {/* Meta Information */}
+                <div>
+                  <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
+                    System Fields
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <DataField label="Reference Number" value={appointment.referenceNumber} />
+                    <DataField label="App ID" value={appointment.appId} />
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Created At</p>
+                      <p>{appointment.createdAt && new Date(appointment.createdAt).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Updated At</p>
+                      <p>{appointment.updatedAt && new Date(appointment.updatedAt).toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         ) : (
           <div className="p-6 text-center">
@@ -258,22 +391,24 @@ export default function AppointmentDetailsModal({
           </div>
         )}
         
-        <div className="px-6 py-4 border-t border-border flex justify-end">
+        <div className="px-6 py-4 border-t border-border sticky bottom-0 bg-[hsl(var(--surface))] flex justify-end">
           <Button 
-            variant="default"
-            className="mr-3"
-            onClick={handleEditAppointment}
-            disabled={isLoading || isError || !appointment}
-          >
-            <Edit className="mr-2 h-4 w-4" /> View Full Details
-          </Button>
-          <Button 
-            variant="outline" 
+            variant="ghost" 
             onClick={onClose}
-            className="bg-[hsl(var(--surface2))] hover:bg-[hsl(var(--surface))]"
+            className="mr-2"
           >
             Close
           </Button>
+          {appointment && (
+            <Button 
+              variant="default" 
+              onClick={handleEditAppointment}
+              className="gap-2 flex items-center"
+            >
+              <Edit className="h-4 w-4" />
+              Edit
+            </Button>
+          )}
         </div>
       </div>
     </div>,
