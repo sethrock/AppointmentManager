@@ -8,6 +8,7 @@ import { formatCurrency } from "@/lib/utils";
 import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { Appointment } from "@/types/appointment";
 
 interface AppointmentDetailsModalProps {
   appointmentId: string;
@@ -25,7 +26,7 @@ export default function AppointmentDetailsModal({
     data: appointment, 
     isLoading, 
     isError 
-  } = useQuery({
+  } = useQuery<Appointment>({
     queryKey: [`/api/appointments/${appointmentId}`],
   });
 
@@ -95,7 +96,7 @@ export default function AppointmentDetailsModal({
         <div className="px-6 py-4 border-b border-border flex justify-between items-center sticky top-0 bg-[hsl(var(--surface))] z-10">
           <h3 className="text-lg font-medium">
             Appointment Details
-            {appointment?.clientName && ` - ${appointment.clientName}`}
+            {(appointment as Appointment)?.clientName && ` - ${(appointment as Appointment).clientName}`}
           </h3>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-4 w-4" />
@@ -151,7 +152,7 @@ export default function AppointmentDetailsModal({
               Please try again later or contact support.
             </p>
           </div>
-        ) : appointment ? (
+        ) : appointment as Appointment ? (
           <div className="p-6">
             <Tabs defaultValue="basic" className="w-full">
               <TabsList className="mb-4">
@@ -408,7 +409,7 @@ export default function AppointmentDetailsModal({
               <Edit className="h-4 w-4" />
               Edit
             </Button>
-          )}
+          ) as JSX.Element}
         </div>
       </div>
     </div>,
