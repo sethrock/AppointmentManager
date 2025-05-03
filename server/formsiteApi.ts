@@ -1,34 +1,43 @@
 import { AppointmentFilters, Appointment } from "@shared/schema";
 import { parse } from "date-fns";
 
-// Formsite API v2 endpoints
-// Reference: https://fs16.formsite.com/documentation/api/
-const API_BASE_URL = "https://fs16.formsite.com/api/v2";
-const FORM_ID = "Qi21et"; // Form ID for appointments
+// Formsite API v2 endpoints based on documentation
+// Reference: https://support.formsite.com/hc/en-us/articles/360000288594-API
+const SERVER = "fs16";  // Server prefix (fs16, fs1, etc.)
+const USER_DIR = "Qi21et"; // User directory
+const FORM_DIR = "appointment"; // Form directory
 const API_TOKEN = process.env.FORMSITE_API_TOKEN;
 
 // Helper function to make authenticated requests to Formsite API
-async function formsiteRequest(endpoint: string, method = "GET", data?: any) {
-  // Format URL based on endpoint type
-  let url = `${API_BASE_URL}`;
+async function formsiteRequest(endpoint: string, method = "GET", params: Record<string, string> = {}, data?: any) {
+  // Build the base URL according to Formsite API format
+  let url = `https://${SERVER}.formsite.com/api/v2`;
   
-  // Check if this is a form-specific endpoint
-  if (endpoint.startsWith('/forms/')) {
-    url = `${url}${endpoint}`;
-  } 
-  // Check if this is a results endpoint
-  else if (endpoint.startsWith('/results')) {
-    url = `${url}/forms/${FORM_ID}${endpoint}`;
+  // Add user_dir and form_dir if needed
+  if (endpoint.includes("{user_dir}")) {
+    endpoint = endpoint.replace("{user_dir}", USER_DIR);
   }
-  // Default fallback for other endpoints
-  else {
-    url = `${url}${endpoint}`;
+  
+  if (endpoint.includes("{form_dir}")) {
+    endpoint = endpoint.replace("{form_dir}", FORM_DIR);
+  }
+  
+  // Complete URL
+  url = `${url}${endpoint}`;
+  
+  // Add query parameters if any
+  if (Object.keys(params).length > 0) {
+    const queryParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      queryParams.append(key, value);
+    });
+    url = `${url}?${queryParams.toString()}`;
   }
   
   const options: RequestInit = {
     method,
     headers: {
-      "Authorization": `Bearer ${API_TOKEN}`,
+      "Authorization": `bearer ${API_TOKEN}`, // Note: lowercase 'bearer' as per docs
       "Content-Type": "application/json",
       "Accept": "application/json"
     },
@@ -36,6 +45,7 @@ async function formsiteRequest(endpoint: string, method = "GET", data?: any) {
   };
 
   try {
+    console.log(`Making Formsite API request to: ${url}`);
     const response = await fetch(url, options);
     if (!response.ok) {
       const errorText = await response.text();
@@ -48,40 +58,81 @@ async function formsiteRequest(endpoint: string, method = "GET", data?: any) {
   }
 }
 
+// Get form items to understand the structure
+export async function getFormItems() {
+  try {
+    // According to Formsite API docs, we need to call:
+    // GET https://{server}.formsite.com/api/v2/{user_dir}/forms/{form_dir}/items
+    const endpoint = "/{user_dir}/forms/{form_dir}/items";
+    
+    const response = await formsiteRequest(endpoint);
+    console.log("Retrieved form structure");
+    
+    return response;
+  } catch (error) {
+    console.error("Error fetching form items:", error);
+    throw error;
+  }
+}
+
 // Map Formsite form data to our Appointment schema
 function mapFormsiteDataToAppointment(result: any): Appointment {
   try {
-    const grossRevenue = parseFloat(result.items?.find((item: any) => item.label === "Gross Revenue")?.value || "0");
-    const depositAmount = parseFloat(result.items?.find((item: any) => item.label === "Deposit Amount")?.value || "0");
+    console.log("Mapping result to appointment:", JSON.stringify(result).substring(0, 200) + "...");
+    
+    // Check the structure of the result to determine if we need to access items differently
+    let items = result.items;
+    
+    // Extract values using proper API format
+    const findValue = (label: string) => {
+      const item = items?.find((item: any) => {
+        // Handle different possible item structures
+        return item.label === label;
+      });
+      
+      if (!item) return undefined;
+      
+      // Handle different response formats from API
+      if (item.value !== undefined) return item.value;
+      if (item.values && item.values.length > 0) {
+        // For multi-choice items
+        return item.values.map((v: any) => v.value).join(", ");
+      }
+      
+      return undefined;
+    };
+    
+    const grossRevenue = parseFloat(findValue("Gross Revenue") || "0");
+    const depositAmount = parseFloat(findValue("Deposit Amount") || "0");
     
     return {
-      id: result.id.toString(),
-      clientName: result.items?.find((item: any) => item.label === "Client Name")?.value,
-      clientPhone: result.items?.find((item: any) => item.label === "Phone Number")?.value,
-      clientUsesEmail: result.items?.find((item: any) => item.label === "Client Uses Email")?.value === "Yes",
-      clientEmail: result.items?.find((item: any) => item.label === "Client E-mail")?.value,
-      callType: result.items?.find((item: any) => item.label === "In or Out Call")?.value,
-      streetAddress: result.items?.find((item: any) => item.label === "Street Address")?.value,
-      addressLine2: result.items?.find((item: any) => item.label === "Address Line 2")?.value,
-      city: result.items?.find((item: any) => item.label === "City")?.value,
-      state: result.items?.find((item: any) => item.label === "State")?.value,
-      zipCode: result.items?.find((item: any) => item.label === "Zip Code")?.value,
-      startDate: result.items?.find((item: any) => item.label === "Appointment Start Date")?.value,
-      startTime: result.items?.find((item: any) => item.label === "Appointment Start Time")?.value,
-      endDate: result.items?.find((item: any) => item.label === "Appointment End Date")?.value,
-      endTime: result.items?.find((item: any) => item.label === "Appointment End Time")?.value,
-      duration: parseFloat(result.items?.find((item: any) => item.label === "Call Duration")?.value || "0"),
+      id: result.id ? result.id.toString() : "",
+      clientName: findValue("Client Name"),
+      clientPhone: findValue("Phone Number"),
+      clientUsesEmail: findValue("Client Uses Email") === "Yes",
+      clientEmail: findValue("Client E-mail"),
+      callType: findValue("In or Out Call"),
+      streetAddress: findValue("Street Address"),
+      addressLine2: findValue("Address Line 2"),
+      city: findValue("City"),
+      state: findValue("State"),
+      zipCode: findValue("Zip Code"),
+      startDate: findValue("Appointment Start Date"),
+      startTime: findValue("Appointment Start Time"),
+      endDate: findValue("Appointment End Date"),
+      endTime: findValue("Appointment End Time"),
+      duration: parseFloat(findValue("Call Duration") || "0"),
       grossRevenue: grossRevenue,
       depositAmount: depositAmount,
-      depositReceivedBy: result.items?.find((item: any) => item.label === "Deposit Recieved By")?.value,
-      paymentProcess: result.items?.find((item: any) => item.label === "Payment Process Used")?.value,
+      depositReceivedBy: findValue("Deposit Recieved By"),
+      paymentProcess: findValue("Payment Process Used"),
       dueToProvider: grossRevenue - depositAmount,
-      setBy: result.items?.find((item: any) => item.label === "Set By")?.value,
-      provider: result.items?.find((item: any) => item.label === "Provider")?.value,
-      marketingChannel: result.items?.find((item: any) => item.label === "Marketing Chanel")?.value,
-      clientNotes: result.items?.find((item: any) => item.label === "Client Notes")?.value,
-      createdAt: result.date_created ? new Date(result.date_created) : undefined,
-      updatedAt: result.date_updated ? new Date(result.date_updated) : undefined,
+      setBy: findValue("Set By"),
+      provider: findValue("Provider"),
+      marketingChannel: findValue("Marketing Chanel"),
+      clientNotes: findValue("Client Notes"),
+      createdAt: result.date_start ? new Date(result.date_start) : undefined,
+      updatedAt: result.date_update ? new Date(result.date_update) : undefined,
     };
   } catch (error) {
     console.error("Error mapping Formsite data to Appointment:", error);
@@ -92,36 +143,59 @@ function mapFormsiteDataToAppointment(result: any): Appointment {
 // Fetch appointments with optional filters
 export async function getAppointments(filters?: AppointmentFilters): Promise<Appointment[]> {
   try {
-    // Fetch results from the Formsite API
-    const response = await formsiteRequest("/results");
+    // According to Formsite API docs, we need to call:
+    // GET https://{server}.formsite.com/api/v2/{user_dir}/forms/{form_dir}/results
+    const endpoint = "/{user_dir}/forms/{form_dir}/results";
+    
+    // Set up parameters for pagination and filter data
+    const params: Record<string, string> = {
+      limit: "100" // Maximum allowed by API
+    };
+    
+    // Add filter-specific search parameters if provided
+    if (filters) {
+      if (filters.setBy && filters.setBy !== "all") {
+        // We need to determine the item ID for "Set By" field
+        // This would typically come from "Get Form Items" API call
+        // For now, we'll use server-side filtering after retrieval
+      }
+      if (filters.provider && filters.provider !== "all") {
+        // Same approach for provider
+      }
+      if (filters.marketingChannel && filters.marketingChannel !== "all") {
+        // Same approach for marketing channel
+      }
+    }
+    
+    const response = await formsiteRequest(endpoint, "GET", params);
+    console.log("Received Formsite API response for appointments");
     
     if (!response?.results) {
-      throw new Error("Invalid response from Formsite API");
+      console.error("Invalid response format:", response);
+      throw new Error("Invalid response from Formsite API: missing results array");
     }
     
     // Map the results to our Appointment schema
-    let appointments = await Promise.all(
-      response.results.map(async (result: any) => {
-        // For each result, we need to fetch the detailed data
-        const detailedResult = await formsiteRequest(`/results/${result.id}`);
-        return mapFormsiteDataToAppointment(detailedResult);
-      })
-    );
+    const appointments = response.results.map((result: any) => {
+      return mapFormsiteDataToAppointment(result);
+    });
     
-    // Apply filters if provided
+    // Apply filters if provided (on the client side if we couldn't do it in the API)
+    let filteredAppointments = [...appointments];
     if (filters) {
       if (filters.setBy && filters.setBy !== "all") {
-        appointments = appointments.filter(app => app.setBy === filters.setBy);
+        filteredAppointments = filteredAppointments.filter(app => app.setBy === filters.setBy);
       }
       if (filters.provider && filters.provider !== "all") {
-        appointments = appointments.filter(app => app.provider === filters.provider);
+        filteredAppointments = filteredAppointments.filter(app => app.provider === filters.provider);
       }
       if (filters.marketingChannel && filters.marketingChannel !== "all") {
-        appointments = appointments.filter(app => app.marketingChannel === filters.marketingChannel);
+        filteredAppointments = filteredAppointments.filter(app => app.marketingChannel === filters.marketingChannel);
       }
     }
     
-    return appointments;
+    console.log(`Retrieved ${filteredAppointments.length} appointments`);
+    return filteredAppointments;
   } catch (error) {
     console.error("Error fetching appointments:", error);
     throw error;
@@ -131,7 +205,12 @@ export async function getAppointments(filters?: AppointmentFilters): Promise<App
 // Fetch a single appointment by ID
 export async function getAppointmentById(id: string): Promise<Appointment | null> {
   try {
-    const result = await formsiteRequest(`/results/${id}`);
+    // According to Formsite API docs, we need to call:
+    // GET https://{server}.formsite.com/api/v2/{user_dir}/forms/{form_dir}/results/{result_id}
+    const endpoint = `/{user_dir}/forms/{form_dir}/results/${id}`;
+    
+    const result = await formsiteRequest(endpoint);
+    console.log(`Retrieved appointment data for ID: ${id}`);
     
     if (!result) {
       return null;
