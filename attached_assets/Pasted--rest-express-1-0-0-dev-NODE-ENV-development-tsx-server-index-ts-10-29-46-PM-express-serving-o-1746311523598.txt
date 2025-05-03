@@ -1,0 +1,245 @@
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+10:29:46 PM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+10:30:11 PM [express] GET /api/filters 304 in 2ms :: {"setBy":["Seth","Sera"],"provider":["Sera","Cou…
+10:30:11 PM [express] GET /api/filters 304 in 1ms :: {"setBy":["Seth","Sera"],"provider":["Sera","Cou…
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 0)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+Error fetching appointments: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 0)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+10:30:11 PM [express] GET /api/appointments 500 in 422ms :: {"message":"Formsite API error (404): {\"…
+Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 0)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 1)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 3)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 2)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 4)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 5)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 2)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+Error fetching appointments: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 2)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+10:30:12 PM [express] GET /api/appointments 500 in 309ms :: {"message":"Formsite API error (404): {\"…
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 0)
+Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 2)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+Formsite API request failed: Error: Formsite API error (429): {"error":{"message":"Too many requests. Wait at least one minute and try again.","status":429}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 4)
+Formsite API request failed: Error: Formsite API error (429): {"error":{"message":"Too many requests. Wait at least one minute and try again.","status":429}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 1)
+Formsite API request failed: Error: Formsite API error (429): {"error":{"message":"Too many requests. Wait at least one minute and try again.","status":429}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 5)
+Formsite API request failed: Error: Formsite API error (429): {"error":{"message":"Too many requests. Wait at least one minute and try again.","status":429}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 3)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 0)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+Error fetching appointments: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 0)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+10:30:42 PM [express] GET /api/appointments 500 in 313ms :: {"message":"Formsite API error (404): {\"…
+Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 0)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 1)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 2)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 4)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 5)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 3)
+10:30:53 PM [express] GET /api/filters 304 in 1ms :: {"setBy":["Seth","Sera"],"provider":["Sera","Cou…
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 0)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+Error fetching appointments: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 0)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+10:30:54 PM [express] GET /api/appointments 500 in 297ms :: {"message":"Formsite API error (404): {\"…
+Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 0)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 1)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 2)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 3)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 5)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 4)
+10:31:18 PM [express] GET /api/filters 304 in 0ms :: {"setBy":["Seth","Sera"],"provider":["Sera","Cou…
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 0)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+Error fetching appointments: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 0)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+10:31:19 PM [express] GET /api/appointments 500 in 328ms :: {"message":"Formsite API error (404): {\"…
+Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 0)
+    at async getAppointments (/home/runner/workspace/server/formsiteApi.ts:85:24)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:28)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 2)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 3)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 5)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)
+    at async Promise.all (index 4)
+Formsite API request failed: Error: Formsite API error (404): {"error":{"message":"Path not found.","status":404}}
+    at formsiteRequest (/home/runner/workspace/server/formsiteApi.ts:24:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/formsiteApi.ts:88:32)

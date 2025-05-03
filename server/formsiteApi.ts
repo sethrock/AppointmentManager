@@ -1,12 +1,30 @@
 import { AppointmentFilters, Appointment } from "@shared/schema";
 import { parse } from "date-fns";
 
-const API_BASE_URL = "https://fs16.formsite.com/api/v2/Qi21et/forms/appointment";
-const API_TOKEN = process.env.FORMSITE_API_TOKEN || "e6X1ZphNxP2rinyLFmaNNHQIcBw4mjGZ";
+// Formsite API v2 endpoints
+// Reference: https://fs16.formsite.com/documentation/api/
+const API_BASE_URL = "https://fs16.formsite.com/api/v2";
+const FORM_ID = "Qi21et"; // Form ID for appointments
+const API_TOKEN = process.env.FORMSITE_API_TOKEN;
 
 // Helper function to make authenticated requests to Formsite API
 async function formsiteRequest(endpoint: string, method = "GET", data?: any) {
-  const url = `${API_BASE_URL}${endpoint}`;
+  // Format URL based on endpoint type
+  let url = `${API_BASE_URL}`;
+  
+  // Check if this is a form-specific endpoint
+  if (endpoint.startsWith('/forms/')) {
+    url = `${url}${endpoint}`;
+  } 
+  // Check if this is a results endpoint
+  else if (endpoint.startsWith('/results')) {
+    url = `${url}/forms/${FORM_ID}${endpoint}`;
+  }
+  // Default fallback for other endpoints
+  else {
+    url = `${url}${endpoint}`;
+  }
+  
   const options: RequestInit = {
     method,
     headers: {
