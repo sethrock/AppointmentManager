@@ -323,18 +323,34 @@ export async function getAppointments(filters?: AppointmentFilters): Promise<App
 // Fetch a single appointment by ID
 export async function getAppointmentById(id: string): Promise<Appointment | null> {
   try {
-    // According to Formsite API docs, we need to call:
-    // GET https://{server}.formsite.com/api/v2/{user_dir}/forms/{form_dir}/results/{result_id}
-    const endpoint = `/{user_dir}/forms/{form_dir}/results/${id}`;
+    // First try to get the appointment from the results list
+    // This is a workaround for the API limitation where direct ID lookup may not work
+    const allAppointments = await getAppointments();
+    const appointment = allAppointments.find(app => app.id === id);
     
-    const result = await formsiteRequest(endpoint);
-    console.log(`Retrieved appointment data for ID: ${id}`);
-    
-    if (!result) {
-      return null;
+    if (appointment) {
+      console.log(`Found appointment ${id} in cached results`);
+      return appointment;
     }
     
-    return mapFormsiteDataToAppointment(result);
+    // If we couldn't find it in the list, try direct API call as fallback
+    try {
+      // According to Formsite API docs, we need to call:
+      // GET https://{server}.formsite.com/api/v2/{user_dir}/forms/{form_dir}/results/{result_id}
+      const endpoint = `/{user_dir}/forms/{form_dir}/results/${id}`;
+      
+      const result = await formsiteRequest(endpoint);
+      console.log(`Retrieved appointment data for ID: ${id} via direct API call`);
+      
+      if (!result) {
+        return null;
+      }
+      
+      return mapFormsiteDataToAppointment(result);
+    } catch (directError) {
+      console.error(`Error in direct fetch for appointment ${id}:`, directError);
+      return null; // Return null instead of throwing to allow fallback
+    }
   } catch (error) {
     console.error(`Error fetching appointment ${id}:`, error);
     throw error;

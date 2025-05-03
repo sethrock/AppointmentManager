@@ -23,12 +23,15 @@ export default function AppointmentDetailsModal({
   const [, navigate] = useLocation();
   
   const { 
-    data: appointment, 
+    data: appointmentData, 
     isLoading, 
     isError 
   } = useQuery<Appointment>({
     queryKey: [`/api/appointments/${appointmentId}`],
   });
+  
+  // Type cast the appointment data to ensure TypeScript safety
+  const appointment = appointmentData as Appointment;
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -96,7 +99,7 @@ export default function AppointmentDetailsModal({
         <div className="px-6 py-4 border-b border-border flex justify-between items-center sticky top-0 bg-[hsl(var(--surface))] z-10">
           <h3 className="text-lg font-medium">
             Appointment Details
-            {(appointment as Appointment)?.clientName && ` - ${(appointment as Appointment).clientName}`}
+            {appointment?.clientName && ` - ${appointment.clientName}`}
           </h3>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-4 w-4" />
@@ -152,7 +155,7 @@ export default function AppointmentDetailsModal({
               Please try again later or contact support.
             </p>
           </div>
-        ) : appointment as Appointment ? (
+        ) : appointment ? (
           <div className="p-6">
             <Tabs defaultValue="basic" className="w-full">
               <TabsList className="mb-4">
@@ -409,7 +412,7 @@ export default function AppointmentDetailsModal({
               <Edit className="h-4 w-4" />
               Edit
             </Button>
-          ) as JSX.Element}
+          )}
         </div>
       </div>
     </div>,
