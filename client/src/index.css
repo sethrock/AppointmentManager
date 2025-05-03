@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 207 90% 54%;  /* #0078D4 */
+  --primary-foreground: 211 100% 99%;
+  --secondary: 48 83% 61%;  /* #F2C94C */
+  --secondary-foreground: 240 10% 3.9%;
+  --accent: 240 60% 56%;  /* #5B5FC7 */
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+  --radius: 0.5rem;
+  
+  /* Surface colors for dashboard */
+  --surface: 240 4% 16%;  /* #252526 */
+  --surface2: 240 2% 18%;  /* #2D2D30 */
+  --text-primary: 0 0% 98%;  /* #FAFAFA */
+  --text-secondary: 0 0% 63%;  /* #A0A0A0 */
+  --success: 122 39% 49%;  /* #4CAF50 */
+  --error: 0 73% 58%;  /* #F44336 */
+  --warning: 36 100% 50%;  /* #FF9800 */
+  --chart-1: 207 90% 54%;
+  --chart-2: 48 83% 61%;
+  --chart-3: 240 60% 56%;
+  --chart-4: 122 39% 49%;
+  --chart-5: 0 73% 58%;
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 207 90% 54%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 48 83% 61%;
+  --secondary-foreground: 240 10% 3.9%;
+  --accent: 240 60% 56%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html, body {
+    @apply bg-background text-foreground;
+  }
+
+  body {
+    @apply font-sans antialiased min-h-screen;
+  }
+}
+
+.loading-spinner {
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 3px solid hsl(var(--primary));
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
