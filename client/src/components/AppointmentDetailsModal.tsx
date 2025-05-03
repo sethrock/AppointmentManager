@@ -5,6 +5,7 @@ import { ExternalLink, X, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
+import { ApiError } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
@@ -25,13 +26,20 @@ export default function AppointmentDetailsModal({
   const { 
     data: appointmentData, 
     isLoading, 
-    isError 
+    isError,
+    error
   } = useQuery<Appointment>({
     queryKey: [`/api/appointments/${appointmentId}`],
+    retry: false, // Don't retry on 404s
   });
   
   // Type cast the appointment data to ensure TypeScript safety
   const appointment = appointmentData as Appointment;
+  
+  // Get error status to determine if it's a 404 or another error
+  const errorStatus = error instanceof ApiError ? 
+    error.status : 
+    500;
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -148,11 +156,15 @@ export default function AppointmentDetailsModal({
           </div>
         ) : isError ? (
           <div className="p-6 text-center">
-            <p className="text-[hsl(var(--error))] mb-2">
-              Error loading appointment details
+            <p className={errorStatus === 404 ? "text-muted-foreground mb-2" : "text-[hsl(var(--error))] mb-2"}>
+              {errorStatus === 404 
+                ? "Appointment Not Found" 
+                : "Error loading appointment details"}
             </p>
             <p className="text-muted-foreground mb-4">
-              Please try again later or contact support.
+              {errorStatus === 404
+                ? "The requested appointment could not be found in the system."
+                : "Please try again later or contact support."}
             </p>
           </div>
         ) : appointment ? (

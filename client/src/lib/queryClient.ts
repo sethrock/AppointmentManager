@@ -1,9 +1,24 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+/**
+ * Custom error class for API errors that captures HTTP status codes
+ */
+export class ApiError extends Error {
+  status: number;
+  response: Response;
+  
+  constructor(message: string, status: number, response: Response) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.response = response;
+  }
+}
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    throw new ApiError(`${res.status}: ${text}`, res.status, res);
   }
 }
 

@@ -40,7 +40,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       
       try {
-        const appointment = await getAppointmentById(id);
+        // Get all appointments (this will use the cache we built in the API)
+        const allAppointments = await getAppointments();
+        
+        // Find the appointment directly from the list
+        const appointment = allAppointments.find(app => app.id === id);
         
         if (!appointment) {
           return res.status(404).json({ message: "Appointment not found" });
@@ -49,10 +53,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json(appointment);
       } catch (apiError) {
         console.error(`Error fetching appointment ${id}:`, apiError);
-        // Return the actual error for debugging the API connection
-        return res.status(500).json({ 
-          message: apiError instanceof Error ? apiError.message : "Unknown error occurred",
-          error: "formsite_api_error"
+        // Return a 404 instead of 500 for a better UX when appointment not found
+        return res.status(404).json({ 
+          message: "Appointment not found",
+          error: "not_found"
         });
       }
     } catch (error) {
