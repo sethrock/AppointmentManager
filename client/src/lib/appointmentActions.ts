@@ -75,10 +75,10 @@ export function buildRescheduleUrl(appointment: Appointment, action: 'Reschedule
   };
   
   const dispositionStatusMap: Record<string, string> = {
-    "Completed": "1",
-    "Cancelled": "2",
-    "No-Show": "3",
-    // Add appropriate options
+    "Complete": "1",    
+    "Reschedule": "2",
+    "Cancel": "3",
+    // Specific positions for our action buttons
   };
   
   // Pre-fill all the appointment data
@@ -136,8 +136,8 @@ export function buildRescheduleUrl(appointment: Appointment, action: 'Reschedule
   if (appointment.clientNotes) params.append("id45", appointment.clientNotes);
   
   // Set the Disposition Status based on the action button clicked
-  // Use the action parameter instead of the stored disposition status
-  params.append("id49", action);
+  // Use the correct position number for the dropdown from the mapping
+  params.append("id49", mapDropdownValue(action, dispositionStatusMap));
   
   if (appointment.totalCollectedCash) params.append("id51", appointment.totalCollectedCash);
   if (appointment.totalCollectedDigital) params.append("id52", appointment.totalCollectedDigital);
