@@ -271,19 +271,7 @@ export async function getAppointments(filters?: AppointmentFilters): Promise<App
     };
     
     // Add filter-specific search parameters if provided
-    if (filters) {
-      if (filters.setBy && filters.setBy !== "all") {
-        // We need to determine the item ID for "Set By" field
-        // This would typically come from "Get Form Items" API call
-        // For now, we'll use server-side filtering after retrieval
-      }
-      if (filters.provider && filters.provider !== "all") {
-        // Same approach for provider
-      }
-      if (filters.marketingChannel && filters.marketingChannel !== "all") {
-        // Same approach for marketing channel
-      }
-    }
+    // Note: We now only support phone number filtering, which is done client-side after data retrieval
     
     const response = await formsiteRequest(endpoint, "GET", params);
     console.log("Received Formsite API response for appointments");
@@ -301,14 +289,11 @@ export async function getAppointments(filters?: AppointmentFilters): Promise<App
     // Apply filters if provided (on the client side if we couldn't do it in the API)
     let filteredAppointments = [...appointments];
     if (filters) {
-      if (filters.setBy && filters.setBy !== "all") {
-        filteredAppointments = filteredAppointments.filter(app => app.setBy === filters.setBy);
-      }
-      if (filters.provider && filters.provider !== "all") {
-        filteredAppointments = filteredAppointments.filter(app => app.provider === filters.provider);
-      }
-      if (filters.marketingChannel && filters.marketingChannel !== "all") {
-        filteredAppointments = filteredAppointments.filter(app => app.marketingChannel === filters.marketingChannel);
+      if (filters.phoneNumber && filters.phoneNumber.trim() !== "") {
+        const phoneNumber = filters.phoneNumber.trim().replace(/\D/g, ""); // Remove non-digit characters
+        filteredAppointments = filteredAppointments.filter(app => 
+          app.clientPhone && app.clientPhone.replace(/\D/g, "").includes(phoneNumber)
+        );
       }
     }
     

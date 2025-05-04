@@ -189,9 +189,7 @@ export type Appointment = z.infer<typeof appointmentSchema>;
 
 // Define filters for appointment data
 export const appointmentFiltersSchema = z.object({
-  setBy: z.string().optional(),
-  provider: z.string().optional(),
-  marketingChannel: z.string().optional(),
+  phoneNumber: z.string().optional(),
 });
 
 export type AppointmentFilters = z.infer<typeof appointmentFiltersSchema>;

@@ -15,10 +15,7 @@ export default function Dashboard() {
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
   const { toast } = useToast();
   
-  // Fetch filter options
-  const { data: filterOptions } = useQuery({
-    queryKey: ['/api/filters'],
-  });
+  // We don't need filter options anymore since we only filter by phone number
   
   // Fetch appointments with filters
   const { 
@@ -98,7 +95,6 @@ export default function Dashboard() {
       <FilterSection 
         onFilterChange={handleFilterChange} 
         filters={filters}
-        filterOptions={filterOptions}
         isLoading={isLoading}
       />
 
