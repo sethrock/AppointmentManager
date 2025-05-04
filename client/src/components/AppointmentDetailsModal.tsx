@@ -17,7 +17,6 @@ import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Appointment } from "@/types/appointment";
-import { buildRescheduleUrl } from "../lib/appointmentActions"; // Added import
 
 interface AppointmentDetailsModalProps {
   appointmentId: string;
@@ -30,7 +29,7 @@ export default function AppointmentDetailsModal({
 }: AppointmentDetailsModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
-
+  
   const { 
     data: appointmentData, 
     isLoading, 
@@ -40,10 +39,10 @@ export default function AppointmentDetailsModal({
     queryKey: [`/api/appointments/${appointmentId}`],
     retry: false, // Don't retry on 404s
   });
-
+  
   // Type cast the appointment data to ensure TypeScript safety
   const appointment = appointmentData as Appointment;
-
+  
   // Get error status to determine if it's a 404 or another error
   const errorStatus = error instanceof ApiError ? 
     error.status : 
@@ -77,11 +76,11 @@ export default function AppointmentDetailsModal({
     // Navigate to the details page
     navigate(`/appointments/${appointmentId}`);
   };
-
+  
   // Helper function to display data field with label
   const DataField = ({ label, value, className = "" }: { label: string; value?: string | number | null; className?: string }) => {
     if (value === undefined || value === null || value === "") return null;
-
+    
     return (
       <div className={className}>
         <p className="text-sm text-muted-foreground mb-1">{label}</p>
@@ -93,9 +92,9 @@ export default function AppointmentDetailsModal({
   // Helper function to display currency values
   const CurrencyField = ({ label, value, highlight = false }: { label: string; value?: number | null; highlight?: boolean }) => {
     if (value === undefined || value === null) return null;
-
+    
     const textClass = highlight ? "font-mono text-[hsl(var(--secondary))] font-medium" : "font-mono";
-
+    
     return (
       <div>
         <p className="text-sm text-muted-foreground mb-1">{label}</p>
@@ -105,15 +104,6 @@ export default function AppointmentDetailsModal({
       </div>
     );
   };
-
-  const handleReschedule = () => {
-    // Placeholder:  Replace with actual implementation using buildRescheduleUrl and appointment data
-    if (appointment) {
-      const rescheduleUrl = buildRescheduleUrl(appointment);
-      window.open(rescheduleUrl, '_blank');
-    }
-  };
-
 
   return createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
@@ -130,7 +120,7 @@ export default function AppointmentDetailsModal({
             <X className="h-4 w-4" />
           </Button>
         </div>
-
+        
         {isLoading ? (
           <div className="p-6 space-y-6">
             <div>
@@ -146,7 +136,7 @@ export default function AppointmentDetailsModal({
                 </div>
               </div>
             </div>
-
+            
             <div>
               <Skeleton className="h-4 w-32 mb-2" />
               <div className="space-y-2">
@@ -194,7 +184,7 @@ export default function AppointmentDetailsModal({
                 <TabsTrigger value="updates">Updates</TabsTrigger>
                 <TabsTrigger value="meta">Meta</TabsTrigger>
               </TabsList>
-
+              
               {/* Basic Info Tab */}
               <TabsContent value="basic" className="space-y-6">
                 {/* Booking Info */}
@@ -208,7 +198,7 @@ export default function AppointmentDetailsModal({
                     <DataField label="Marketing Channel" value={appointment.marketingChannel} />
                   </div>
                 </div>
-
+                
                 {/* Client Information */}
                 <div>
                   <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
@@ -238,7 +228,7 @@ export default function AppointmentDetailsModal({
                     )}
                   </div>
                 </div>
-
+                
                 {/* Location Information */}
                 <div>
                   <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
@@ -248,7 +238,7 @@ export default function AppointmentDetailsModal({
                     <DataField label="Call Type" value={appointment.callType} />
                     <DataField label="Outcall Details" value={appointment.outcallDetails} />
                   </div>
-
+                  
                   {appointment.streetAddress && (
                     <div className="mt-3">
                       <p className="text-sm text-muted-foreground mb-1">Address</p>
@@ -262,7 +252,7 @@ export default function AppointmentDetailsModal({
                     </div>
                   )}
                 </div>
-
+                
                 {/* Date & Time Information */}
                 <div>
                   <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
@@ -279,13 +269,13 @@ export default function AppointmentDetailsModal({
                     </div>
                     <DataField label="Duration" value={appointment.duration ? `${appointment.duration} hours` : undefined} />
                   </div>
-
+                  
                   {/* Action Buttons */}
                   <div className="mt-6 grid grid-cols-3 gap-4">
                     <div className="flex flex-col items-center">
                       <button 
                         className="w-full p-4 bg-[hsl(var(--accent))] hover:bg-[hsl(var(--accent-foreground))] text-[hsl(var(--accent-foreground))] hover:text-[hsl(var(--accent))] rounded-md flex flex-col items-center justify-center transition-colors"
-                        onClick={handleReschedule} // Updated onClick handler
+                        onClick={() => alert('Reschedule functionality coming soon')}
                       >
                         <CalendarClock className="h-6 w-6 mb-2" />
                         <span>Reschedule</span>
@@ -312,7 +302,7 @@ export default function AppointmentDetailsModal({
                   </div>
                 </div>
               </TabsContent>
-
+              
               {/* Financial Tab */}
               <TabsContent value="financial" className="space-y-6">
                 {/* Main Financial Information */}
@@ -326,7 +316,7 @@ export default function AppointmentDetailsModal({
                     <CurrencyField label="Due To Provider" value={appointment.dueToProvider} highlight={true} />
                   </div>
                 </div>
-
+                
                 {/* Payment Methods */}
                 <div>
                   <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
@@ -338,7 +328,7 @@ export default function AppointmentDetailsModal({
                     <DataField label="Payment Processor" value={appointment.paymentProcessor} />
                   </div>
                 </div>
-
+                
                 {/* Collection Details */}
                 <div>
                   <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
@@ -352,7 +342,7 @@ export default function AppointmentDetailsModal({
                   </div>
                 </div>
               </TabsContent>
-
+              
               {/* Notes Tab */}
               <TabsContent value="notes" className="space-y-6">
                 {/* Client Notes */}
@@ -368,7 +358,7 @@ export default function AppointmentDetailsModal({
                     />
                   </div>
                 </div>
-
+                
                 {/* Call Notes */}
                 <div>
                   <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
@@ -383,7 +373,7 @@ export default function AppointmentDetailsModal({
                     />
                   </div>
                 </div>
-
+                
                 {/* Status Info */}
                 <div>
                   <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
@@ -392,7 +382,7 @@ export default function AppointmentDetailsModal({
                   <DataField label="Status" value={appointment.dispositionStatus} />
                 </div>
               </TabsContent>
-
+              
               {/* Updates Tab */}
               <TabsContent value="updates" className="space-y-6">
                 {/* Updated Times */}
@@ -411,7 +401,7 @@ export default function AppointmentDetailsModal({
                     </div>
                   </div>
                 </div>
-
+                
                 {/* Cancellation Info */}
                 <div>
                   <h4 className="text-md font-medium text-[hsl(var(--primary))] mb-3 border-b border-border pb-2">
@@ -423,7 +413,7 @@ export default function AppointmentDetailsModal({
                   </div>
                 </div>
               </TabsContent>
-
+              
               {/* Meta Tab */}
               <TabsContent value="meta" className="space-y-6">
                 {/* Meta Information */}
@@ -454,7 +444,7 @@ export default function AppointmentDetailsModal({
             </p>
           </div>
         )}
-
+        
         <div className="px-6 py-4 border-t border-border sticky bottom-0 bg-[hsl(var(--surface))] flex justify-end">
           <Button 
             variant="ghost" 

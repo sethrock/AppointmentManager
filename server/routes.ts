@@ -64,31 +64,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get appointment by ID
-  app.get("/api/appointments/:id", async (req, res, next) => {
-    try {
-      const id = req.params.id;
-      
-      try {
-        const appointment = await getAppointmentById(id);
-        
-        if (!appointment) {
-          return res.status(404).json({ message: "Appointment not found" });
-        }
-        
-        res.json(appointment);
-      } catch (apiError) {
-        console.error(`Error fetching appointment ${id}:`, apiError);
-        return res.status(500).json({ 
-          message: apiError instanceof Error ? apiError.message : "Unknown error occurred",
-          error: "formsite_api_error"
-        });
-      }
-    } catch (error) {
-      next(error);
-    }
-  });
-
   // Get filter options (set by, provider, marketing channel)
   app.get("/api/filters", async (req, res, next) => {
     try {
