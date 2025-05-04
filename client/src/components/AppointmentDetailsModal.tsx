@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { 
@@ -17,10 +17,6 @@ import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Appointment } from "@/types/appointment";
-import RescheduleDialog from "@/components/RescheduleDialog";
-import CompleteDialog from "@/components/CompleteDialog";
-import CancelDialog from "@/components/CancelDialog";
-import { useToast } from "@/hooks/use-toast";
 
 interface AppointmentDetailsModalProps {
   appointmentId: string;
@@ -33,19 +29,12 @@ export default function AppointmentDetailsModal({
 }: AppointmentDetailsModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
-  const { toast } = useToast();
-  
-  // Dialog states
-  const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
-  const [isCompleteOpen, setIsCompleteOpen] = useState(false);
-  const [isCancelOpen, setIsCancelOpen] = useState(false);
   
   const { 
     data: appointmentData, 
     isLoading, 
     isError,
-    error,
-    refetch
+    error
   } = useQuery<Appointment>({
     queryKey: [`/api/appointments/${appointmentId}`],
     retry: false, // Don't retry on 404s
@@ -286,7 +275,7 @@ export default function AppointmentDetailsModal({
                     <div className="flex flex-col items-center">
                       <button 
                         className="w-full p-4 bg-[hsl(var(--accent))] hover:bg-[hsl(var(--accent-foreground))] text-[hsl(var(--accent-foreground))] hover:text-[hsl(var(--accent))] rounded-md flex flex-col items-center justify-center transition-colors"
-                        onClick={() => setIsRescheduleOpen(true)}
+                        onClick={() => alert('Reschedule functionality coming soon')}
                       >
                         <CalendarClock className="h-6 w-6 mb-2" />
                         <span>Reschedule</span>
@@ -295,7 +284,7 @@ export default function AppointmentDetailsModal({
                     <div className="flex flex-col items-center">
                       <button 
                         className="w-full p-4 bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))/90%] text-white rounded-md flex flex-col items-center justify-center transition-colors"
-                        onClick={() => setIsCompleteOpen(true)}
+                        onClick={() => alert('Complete functionality coming soon')}
                       >
                         <CheckCircle className="h-6 w-6 mb-2" />
                         <span>Complete</span>
@@ -304,7 +293,7 @@ export default function AppointmentDetailsModal({
                     <div className="flex flex-col items-center">
                       <button 
                         className="w-full p-4 bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive))/90%] text-white rounded-md flex flex-col items-center justify-center transition-colors"
-                        onClick={() => setIsCancelOpen(true)}
+                        onClick={() => alert('Cancel functionality coming soon')}
                       >
                         <XCircle className="h-6 w-6 mb-2" />
                         <span>Cancel</span>
@@ -476,46 +465,6 @@ export default function AppointmentDetailsModal({
           )}
         </div>
       </div>
-      
-      {/* Action Dialogs */}
-      <RescheduleDialog
-        appointmentId={appointmentId}
-        open={isRescheduleOpen}
-        onOpenChange={setIsRescheduleOpen}
-        onSuccess={() => {
-          refetch();
-          toast({
-            title: "Appointment Updated",
-            description: "The appointment has been rescheduled successfully.",
-          });
-        }}
-      />
-      
-      <CompleteDialog
-        appointmentId={appointmentId}
-        open={isCompleteOpen}
-        onOpenChange={setIsCompleteOpen}
-        onSuccess={() => {
-          refetch();
-          toast({
-            title: "Appointment Completed",
-            description: "The appointment has been marked as completed.",
-          });
-        }}
-      />
-      
-      <CancelDialog
-        appointmentId={appointmentId}
-        open={isCancelOpen}
-        onOpenChange={setIsCancelOpen}
-        onSuccess={() => {
-          refetch();
-          toast({
-            title: "Appointment Cancelled",
-            description: "The appointment has been cancelled successfully.",
-          });
-        }}
-      />
     </div>,
     document.body
   );
