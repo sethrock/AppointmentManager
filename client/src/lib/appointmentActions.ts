@@ -4,7 +4,7 @@ import { Appointment } from "../types/appointment";
 /**
  * Builds a pre-filled URL for the Formsite reschedule form with appointment data
  */
-export function buildRescheduleUrl(appointment: Appointment): string {
+export function buildRescheduleUrl(appointment: Appointment, action: 'Reschedule' | 'Complete' | 'Cancel' = 'Reschedule'): string {
   // Base URL for the reschedule form
   const baseUrl = "https://fs16.formsite.com/Qi21et/appointment-reschedule/fill";
   
@@ -135,8 +135,9 @@ export function buildRescheduleUrl(appointment: Appointment): string {
   if (appointment.leaveNotes) params.append("id44", appointment.leaveNotes);
   if (appointment.clientNotes) params.append("id45", appointment.clientNotes);
   
-  // Dropdown for dispositionStatus
-  if (appointment.dispositionStatus) params.append("id49", mapDropdownValue(appointment.dispositionStatus, dispositionStatusMap));
+  // Set the Disposition Status based on the action button clicked
+  // Use the action parameter instead of the stored disposition status
+  params.append("id49", action);
   
   if (appointment.totalCollectedCash) params.append("id51", appointment.totalCollectedCash);
   if (appointment.totalCollectedDigital) params.append("id52", appointment.totalCollectedDigital);
@@ -159,25 +160,25 @@ export function buildRescheduleUrl(appointment: Appointment): string {
 }
 
 /**
- * Opens the Formsite reschedule form in a new tab/window
+ * Opens the Formsite reschedule form in a new tab/window with "Reschedule" disposition
  */
 export function rescheduleAppointment(appointment: Appointment): void {
-  const url = buildRescheduleUrl(appointment);
+  const url = buildRescheduleUrl(appointment, 'Reschedule');
   window.open(url, '_blank');
 }
 
 /**
- * Placeholder for cancel appointment action
+ * Opens the Formsite form in a new tab/window with "Cancel" disposition
  */
 export function cancelAppointment(appointment: Appointment): void {
-  console.log("Cancel appointment", appointment.id);
-  // Implementation will go here
+  const url = buildRescheduleUrl(appointment, 'Cancel');
+  window.open(url, '_blank');
 }
 
 /**
- * Placeholder for complete appointment action
+ * Opens the Formsite form in a new tab/window with "Complete" disposition
  */
 export function completeAppointment(appointment: Appointment): void {
-  console.log("Complete appointment", appointment.id);
-  // Implementation will go here
+  const url = buildRescheduleUrl(appointment, 'Complete');
+  window.open(url, '_blank');
 }
