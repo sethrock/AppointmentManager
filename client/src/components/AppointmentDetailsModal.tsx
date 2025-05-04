@@ -1,7 +1,14 @@
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ExternalLink, X, Edit } from "lucide-react";
+import { 
+  ExternalLink, 
+  X, 
+  Edit, 
+  CalendarClock, 
+  CheckCircle, 
+  XCircle 
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
@@ -261,6 +268,37 @@ export default function AppointmentDetailsModal({
                       <p>{appointment.endDate} {appointment.endTime}</p>
                     </div>
                     <DataField label="Duration" value={appointment.duration ? `${appointment.duration} hours` : undefined} />
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="mt-6 grid grid-cols-3 gap-4">
+                    <div className="flex flex-col items-center">
+                      <button 
+                        className="w-full p-4 bg-[hsl(var(--accent))] hover:bg-[hsl(var(--accent-foreground))] text-[hsl(var(--accent-foreground))] hover:text-[hsl(var(--accent))] rounded-md flex flex-col items-center justify-center transition-colors"
+                        onClick={() => alert('Reschedule functionality coming soon')}
+                      >
+                        <CalendarClock className="h-6 w-6 mb-2" />
+                        <span>Reschedule</span>
+                      </button>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <button 
+                        className="w-full p-4 bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))/90%] text-white rounded-md flex flex-col items-center justify-center transition-colors"
+                        onClick={() => alert('Complete functionality coming soon')}
+                      >
+                        <CheckCircle className="h-6 w-6 mb-2" />
+                        <span>Complete</span>
+                      </button>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <button 
+                        className="w-full p-4 bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive))/90%] text-white rounded-md flex flex-col items-center justify-center transition-colors"
+                        onClick={() => alert('Cancel functionality coming soon')}
+                      >
+                        <XCircle className="h-6 w-6 mb-2" />
+                        <span>Cancel</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </TabsContent>
