@@ -153,8 +153,9 @@ export function buildRescheduleUrl(appointment: Appointment, action: 'Reschedule
   if (appointment.whoCanceled) params.append("id67", appointment.whoCanceled);
   if (appointment.cancellationDetails) params.append("id68", appointment.cancellationDetails);
   
-  // The crucial part - using the reference number from the original appointment
-  if (appointment.referenceNumber) params.append("id59", appointment.referenceNumber);
+  // The crucial part - using the appointment ID as the reference number
+  // This ensures we're passing the unique identifier (19947904, etc.) to field [pipe:59?]
+  params.append("id59", appointment.id);
   
   return `${baseUrl}?${params.toString()}`;
 }
