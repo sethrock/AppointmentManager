@@ -44,17 +44,16 @@ export default function AppForm() {
   }, []);
   
   return (
-    <div className="container mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold mb-6">Appointment Form</h1>
-      
-      <div 
-        id="formContainer" 
-        className="bg-white rounded-lg shadow-md p-4 min-h-[600px]"
-      >
-        {/* The form will be embedded here by the scripts */}
-        <div className="text-center p-4">
-          <div className="loading-spinner inline-block mb-2"></div>
-          <p>Loading form...</p>
+    <div className="w-full min-h-screen bg-[hsl(var(--background))]">
+      <div className="container mx-auto px-4 py-6">
+        <h1 className="text-2xl font-bold mb-6">Appointment Form</h1>
+        
+        <div 
+          id="formContainer" 
+          className="bg-[hsl(var(--background))] rounded-lg shadow-md p-4 min-h-[600px]"
+        >
+          {/* The form will be embedded here by the scripts */}
+          {/* No loading spinner - it will appear when the form loads */}
         </div>
       </div>
     </div>
