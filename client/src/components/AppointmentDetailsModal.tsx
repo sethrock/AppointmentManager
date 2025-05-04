@@ -9,6 +9,7 @@ import {
   CheckCircle, 
   XCircle 
 } from "lucide-react";
+import { rescheduleAppointment, cancelAppointment, completeAppointment } from "@/lib/appointmentActions";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
@@ -294,7 +295,7 @@ export default function AppointmentDetailsModal({
                     <div className="flex flex-col items-center">
                       <button 
                         className="w-full p-4 bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))/90%] text-white rounded-md flex flex-col items-center justify-center transition-colors"
-                        onClick={() => alert('Complete functionality coming soon')}
+                        onClick={() => completeAppointment(appointment)}
                       >
                         <CheckCircle className="h-6 w-6 mb-2" />
                         <span>Complete</span>
@@ -303,7 +304,7 @@ export default function AppointmentDetailsModal({
                     <div className="flex flex-col items-center">
                       <button 
                         className="w-full p-4 bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive))/90%] text-white rounded-md flex flex-col items-center justify-center transition-colors"
-                        onClick={() => alert('Cancel functionality coming soon')}
+                        onClick={() => cancelAppointment(appointment)}
                       >
                         <XCircle className="h-6 w-6 mb-2" />
                         <span>Cancel</span>
