@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import FilterSection from "@/components/FilterSection";
 import AppointmentTable from "@/components/AppointmentTable";
 import AppointmentDetailsModal from "@/components/AppointmentDetailsModal";
-import { AppointmentFilters } from "@/types/appointment";
+import { AppointmentFilters, Appointment } from "@/types/appointment";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Dashboard() {
@@ -19,7 +19,7 @@ export default function Dashboard() {
   
   // Fetch appointments with filters
   const { 
-    data: appointments, 
+    data: appointments = [], // Default to empty array if undefined
     isLoading, 
     isError, 
     error, 
@@ -126,7 +126,7 @@ export default function Dashboard() {
         </div>
       ) : (
         <AppointmentTable 
-          appointments={appointments || []}
+          appointments={Array.isArray(appointments) ? appointments : []}
           onViewDetails={handleViewDetails}
           isRefetching={isRefetching}
         />
