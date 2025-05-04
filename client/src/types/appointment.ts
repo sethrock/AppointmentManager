@@ -87,7 +87,5 @@ export interface Appointment {
 }
 
 export interface AppointmentFilters {
-  setBy?: string;
-  provider?: string;
-  marketingChannel?: string;
+  phoneNumber?: string;
 }
