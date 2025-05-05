@@ -135,6 +135,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
+  
+  // Analytics endpoints
+  app.get("/api/analytics", async (req, res, next) => {
+    try {
+      const { timeframe = 'month', start, end } = req.query;
+      
+      // Get all appointments for analysis
+      const appointments = await getAppointments();
+      
+      // Filter appointments based on date range if provided
+      const filteredAppointments = start && end
+        ? appointments.filter(appt => {
+            const apptDate = appt.startDate ? new Date(appt.startDate) : null;
+            if (!apptDate) return false;
+            
+            const startDate = new Date(start as string);
+            const endDate = new Date(end as string);
+            
+            return apptDate >= startDate && apptDate <= endDate;
+          })
+        : appointments;
+
+      // Calculate basic metrics
+      const totalAppointments = filteredAppointments.length;
+      const completedAppointments = filteredAppointments.filter(appt => 
+        appt.dispositionStatus === 'Complete').length;
+      const canceledAppointments = filteredAppointments.filter(appt => 
+        appt.dispositionStatus === 'Canceled').length;
+        
+      // Financial metrics
+      const totalRevenue = filteredAppointments.reduce((sum, appt) => 
+        sum + (appt.grossRevenue || 0), 0);
+      const averageRevenue = totalAppointments > 0 
+        ? totalRevenue / totalAppointments 
+        : 0;
+        
+      // Time-based analytics (simplified for this version)
+      const timeframeData = [];
+      
+      // Provider performance data
+      const providerMap = new Map();
+      filteredAppointments.forEach(appt => {
+        if (!appt.provider) return;
+        
+        if (!providerMap.has(appt.provider)) {
+          providerMap.set(appt.provider, {
+            provider: appt.provider,
+            appointments: 0,
+            revenue: 0,
+            canceledAppointments: 0
+          });
+        }
+        
+        const providerStats = providerMap.get(appt.provider);
+        providerStats.appointments += 1;
+        providerStats.revenue += (appt.grossRevenue || 0);
+        
+        if (appt.dispositionStatus === 'Canceled') {
+          providerStats.canceledAppointments += 1;
+        }
+      });
+      
+      const providerPerformance = Array.from(providerMap.values()).map(stats => ({
+        ...stats,
+        cancellationRate: stats.appointments > 0 
+          ? stats.canceledAppointments / stats.appointments 
+          : 0
+      }));
+      
+      // Marketing channel analytics
+      const channelMap = new Map();
+      filteredAppointments.forEach(appt => {
+        if (!appt.marketingChannel) return;
+        
+        if (!channelMap.has(appt.marketingChannel)) {
+          channelMap.set(appt.marketingChannel, {
+            channel: appt.marketingChannel,
+            appointments: 0,
+            revenue: 0
+          });
+        }
+        
+        const channelStats = channelMap.get(appt.marketingChannel);
+        channelStats.appointments += 1;
+        channelStats.revenue += (appt.grossRevenue || 0);
+      });
+      
+      const marketingChannels = Array.from(channelMap.values());
+      const totalChannelAppointments = marketingChannels.reduce((sum, ch) => 
+        sum + ch.appointments, 0);
+      
+      // Add percentage to each channel
+      marketingChannels.forEach(channel => {
+        channel.percentage = totalChannelAppointments > 0 
+          ? (channel.appointments / totalChannelAppointments) * 100 
+          : 0;
+      });
+
+      // Prepare and send response
+      res.json({
+        summary: {
+          totalAppointments,
+          completedAppointments,
+          canceledAppointments,
+          totalRevenue,
+          averageRevenue
+        },
+        timeframeData,
+        providerPerformance,
+        marketingChannels
+      });
+    } catch (error) {
+      console.error("Error in analytics endpoint:", error);
+      next(error);
+    }
+  });
 
   // Webhook endpoints for Formsite form submissions
   // Main appointment form webhook
