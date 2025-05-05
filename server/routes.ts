@@ -171,8 +171,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? totalRevenue / totalAppointments 
         : 0;
         
-      // Time-based analytics (simplified for this version)
-      const timeframeData = [];
+      // Time-based analytics based on the selected timeframe
+      let timeframeData: Array<{label: string, appointments: number, revenue: number}> = [];
+      
+      // Group appointments by time period
+      if (timeframe === 'week') {
+        // For week view, group by day
+        const dayMap = new Map<string, {appointments: number, revenue: number}>();
+        
+        // Initialize past 7 days
+        for (let i = 6; i >= 0; i--) {
+          const date = new Date();
+          date.setDate(date.getDate() - i);
+          const dateStr = date.toISOString().split('T')[0];
+          dayMap.set(dateStr, { appointments: 0, revenue: 0 });
+        }
+        
+        // Fill in data
+        filteredAppointments.forEach(appt => {
+          if (!appt.startDate) return;
+          const dateStr = new Date(appt.startDate).toISOString().split('T')[0];
+          if (dayMap.has(dateStr)) {
+            const dayData = dayMap.get(dateStr)!;
+            dayData.appointments += 1;
+            dayData.revenue += (appt.grossRevenue || 0);
+          }
+        });
+        
+        // Convert to array
+        timeframeData = Array.from(dayMap.entries()).map(([date, data]) => ({
+          label: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          appointments: data.appointments,
+          revenue: data.revenue
+        }));
+      } else if (timeframe === 'month') {
+        // For month view, group by week
+        const weekMap = new Map<number, {appointments: number, revenue: number}>();
+        
+        // Initialize weeks
+        for (let i = 0; i < 5; i++) {
+          weekMap.set(i, { appointments: 0, revenue: 0 });
+        }
+        
+        // Fill in data - assign to weeks based on day of month
+        filteredAppointments.forEach(appt => {
+          if (!appt.startDate) return;
+          const date = new Date(appt.startDate);
+          const weekOfMonth = Math.floor(date.getDate() / 7);
+          if (weekMap.has(weekOfMonth)) {
+            const weekData = weekMap.get(weekOfMonth)!;
+            weekData.appointments += 1;
+            weekData.revenue += (appt.grossRevenue || 0);
+          }
+        });
+        
+        // Convert to array
+        timeframeData = Array.from(weekMap.entries()).map(([week, data]) => ({
+          label: `Week ${week + 1}`,
+          appointments: data.appointments,
+          revenue: data.revenue
+        }));
+      } else if (timeframe === 'year') {
+        // For year view, group by month
+        const monthMap = new Map<number, {appointments: number, revenue: number}>();
+        
+        // Initialize months
+        for (let i = 0; i < 12; i++) {
+          monthMap.set(i, { appointments: 0, revenue: 0 });
+        }
+        
+        // Fill in data
+        filteredAppointments.forEach(appt => {
+          if (!appt.startDate) return;
+          const date = new Date(appt.startDate);
+          const month = date.getMonth();
+          if (monthMap.has(month)) {
+            const monthData = monthMap.get(month)!;
+            monthData.appointments += 1;
+            monthData.revenue += (appt.grossRevenue || 0);
+          }
+        });
+        
+        // Convert to array
+        timeframeData = Array.from(monthMap.entries()).map(([month, data]) => ({
+          label: new Date(2023, month, 1).toLocaleDateString('en-US', { month: 'short' }),
+          appointments: data.appointments,
+          revenue: data.revenue
+        }));
+      }
       
       // Provider performance data
       const providerMap = new Map();
