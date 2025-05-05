@@ -86,7 +86,7 @@ export default function AppointmentTable({
     if (appointment.dispositionStatus) {
       if (appointment.dispositionStatus === 'Complete') {
         return (
-          <Badge variant="success" className="flex items-center gap-1">
+          <Badge variant="outline" className="flex items-center gap-1 bg-green-100 text-green-700 hover:bg-green-200">
             <CheckSquare className="h-3 w-3" />
             Completed
           </Badge>
@@ -102,7 +102,7 @@ export default function AppointmentTable({
       }
       if (appointment.dispositionStatus === 'Reschedule') {
         return (
-          <Badge variant="warning" className="flex items-center gap-1">
+          <Badge variant="outline" className="flex items-center gap-1 bg-amber-100 text-amber-700 hover:bg-amber-200">
             <Clock className="h-3 w-3" />
             Rescheduled
           </Badge>
@@ -113,7 +113,7 @@ export default function AppointmentTable({
     // Check for reschedule indicators
     if (appointment.updatedStartDate || appointment.updatedStartTime) {
       return (
-        <Badge variant="warning" className="flex items-center gap-1">
+        <Badge variant="outline" className="flex items-center gap-1 bg-amber-100 text-amber-700 hover:bg-amber-200">
           <Clock className="h-3 w-3" />
           Rescheduled
         </Badge>
@@ -237,6 +237,9 @@ export default function AppointmentTable({
                 >
                   <TableCell className="font-mono text-muted-foreground">
                     {appointment.id}
+                  </TableCell>
+                  <TableCell>
+                    {getAppointmentStatusBadge(appointment)}
                   </TableCell>
                   <TableCell className="font-medium">
                     {appointment.clientName}
