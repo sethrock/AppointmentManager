@@ -120,7 +120,8 @@ async function processCompleteOrCancelWebhook(payload: any): Promise<string> {
     if (action === 'Complete') {
       updateData.totalCollectedCash = payload.id51 || payload.total_collected_cash;
       updateData.totalCollectedDigital = payload.id52 || payload.total_collected_digital;
-      updateData.totalCollected = payload.id53 ? parseFloat(payload.id53) : undefined;
+      // For DB storage we need to cast the numeric fields to their string representation
+      updateData.totalCollected = payload.id53 ? String(parseFloat(payload.id53)) : undefined;
       updateData.paymentProcessor = payload.id55 || payload.payment_processor;
       updateData.paymentNotes = payload.id56 || payload.payment_notes;
       updateData.seeAgain = payload.id57 || payload.see_again;
@@ -160,9 +161,9 @@ function mapPayloadToAppointment(payload: any): InsertAppointment {
   };
   
   // Convert strings to numbers
-  const stringToNumber = (value: string): number | undefined => {
+  const stringToNumber = (value: string): string | undefined => {
     const num = parseFloat(value);
-    return isNaN(num) ? undefined : num;
+    return isNaN(num) ? undefined : String(num);
   };
   
   // Map the payload to our appointment schema
@@ -249,18 +250,26 @@ export async function handleFormSiteWebhook(req: Request, res: Response) {
   console.log(`Received webhook from ${source}`);
   
   // Create a log entry for this webhook
-  const webhookLog: InsertWebhookLog = {
-    source,
-    appointmentId: payload.id || payload.result_id || payload.id59 || payload.reference_number,
-    rawData: payload,
-    action: 'pending', // Will be updated later
-    status: 'processing',
-    errorMessage: null,
-  };
+  let logId: number | undefined;
   
   try {
-    // Initial log entry
-    const log = await storage.createWebhookLog(webhookLog);
+    const webhookLog: InsertWebhookLog = {
+      source,
+      appointmentId: payload.id || payload.result_id || payload.id59 || payload.reference_number,
+      rawData: payload,
+      action: 'pending', // Will be updated later
+      status: 'processing',
+      errorMessage: null,
+    };
+    
+    try {
+      // Initial log entry
+      const log = await storage.createWebhookLog(webhookLog);
+      logId = log.id;
+    } catch (error) {
+      console.error('Error creating webhook log:', error);
+      // Continue processing even if logging fails
+    }
     
     // Process the webhook based on source
     let result: string;
@@ -287,21 +296,33 @@ export async function handleFormSiteWebhook(req: Request, res: Response) {
     }
     
     // Update log with success
-    await storage.updateWebhookLog(log.id, {
-      status: 'success',
-      action,
-    });
+    if (logId) {
+      try {
+        await storage.updateWebhookLog(logId, {
+          status: 'success',
+          action,
+        });
+      } catch (error) {
+        console.error('Error updating webhook log:', error);
+        // Continue processing even if logging fails
+      }
+    }
     
     res.status(200).json({ success: true, message: result });
-  } catch (error) {
+  } catch (err) {
+    const error = err as Error;
     console.error(`Error processing ${source} webhook:`, error);
     
-    // Update log with error
-    if (webhookLog.appointmentId) {
-      await storage.updateWebhookLog(webhookLog.id, {
-        status: 'error',
-        errorMessage: error.message,
-      });
+    // Update log with error if we have a log ID
+    if (logId) {
+      try {
+        await storage.updateWebhookLog(logId, {
+          status: 'error',
+          errorMessage: error.message,
+        });
+      } catch (logError) {
+        console.error('Error updating webhook log with error:', logError);
+      }
     }
     
     // Return error response (but still 200 to acknowledge receipt)
