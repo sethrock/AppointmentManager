@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, numeric, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, numeric, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -193,3 +193,23 @@ export const appointmentFiltersSchema = z.object({
 });
 
 export type AppointmentFilters = z.infer<typeof appointmentFiltersSchema>;
+
+// Webhook logs schema
+export const webhookLogs = pgTable("webhook_logs", {
+  id: serial("id").primaryKey(),
+  source: text("source").notNull(), // Which Formsite form sent the webhook (appointment, appointment-reschedule, appointment-com-can)
+  appointmentId: text("appointment_id").references(() => appointments.id, { onDelete: 'cascade' }),
+  rawData: jsonb("raw_data"), // Store the complete raw webhook payload for debugging
+  action: text("action"), // The action performed (create, reschedule, complete, cancel)
+  status: text("status").notNull(), // Success or error status
+  errorMessage: text("error_message"), // If there was an error processing the webhook
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertWebhookLogSchema = createInsertSchema(webhookLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertWebhookLog = z.infer<typeof insertWebhookLogSchema>;
+export type WebhookLog = typeof webhookLogs.$inferSelect;
