@@ -100,7 +100,7 @@ export default function AppointmentTable({
           </Badge>
         );
       }
-      if (appointment.dispositionStatus === 'Reschedule') {
+      if (appointment.dispositionStatus === 'Reschedule' || appointment.dispositionStatus === 'Rescheduled') {
         return (
           <Badge variant="outline" className="flex items-center gap-1 bg-amber-100 text-amber-700 hover:bg-amber-200">
             <Clock className="h-3 w-3" />
