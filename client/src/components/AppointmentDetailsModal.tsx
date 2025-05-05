@@ -9,7 +9,7 @@ import {
   CheckCircle, 
   XCircle 
 } from "lucide-react";
-import { rescheduleAppointment, cancelAppointment, completeAppointment } from "@/lib/appointmentActions";
+import { rescheduleAppointment, cancelAppointment, completeAppointment, buildFormUrl } from "@/lib/appointmentActions";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
@@ -18,7 +18,6 @@ import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Appointment } from "@/types/appointment";
-import { buildRescheduleUrl } from "../lib/appointmentActions"; // Added import
 
 interface AppointmentDetailsModalProps {
   appointmentId: string;
@@ -108,10 +107,23 @@ export default function AppointmentDetailsModal({
   };
 
   const handleReschedule = () => {
-    // Placeholder:  Replace with actual implementation using buildRescheduleUrl and appointment data
+    // Use rescheduleAppointment function which now uses buildFormUrl internally
     if (appointment) {
-      const rescheduleUrl = buildRescheduleUrl(appointment);
-      window.open(rescheduleUrl, '_blank');
+      rescheduleAppointment(appointment);
+    }
+  };
+  
+  const handleComplete = () => {
+    // Use completeAppointment function which uses buildFormUrl internally
+    if (appointment) {
+      completeAppointment(appointment);
+    }
+  };
+  
+  const handleCancel = () => {
+    // Use cancelAppointment function which uses buildFormUrl internally
+    if (appointment) {
+      cancelAppointment(appointment);
     }
   };
 
@@ -295,7 +307,7 @@ export default function AppointmentDetailsModal({
                     <div className="flex flex-col items-center">
                       <button 
                         className="w-full p-4 bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))/90%] text-white rounded-md flex flex-col items-center justify-center transition-colors"
-                        onClick={() => completeAppointment(appointment)}
+                        onClick={handleComplete}
                       >
                         <CheckCircle className="h-6 w-6 mb-2" />
                         <span>Complete</span>
@@ -304,7 +316,7 @@ export default function AppointmentDetailsModal({
                     <div className="flex flex-col items-center">
                       <button 
                         className="w-full p-4 bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive))/90%] text-white rounded-md flex flex-col items-center justify-center transition-colors"
-                        onClick={() => cancelAppointment(appointment)}
+                        onClick={handleCancel}
                       >
                         <XCircle className="h-6 w-6 mb-2" />
                         <span>Cancel</span>

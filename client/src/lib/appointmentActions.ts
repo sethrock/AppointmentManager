@@ -2,11 +2,19 @@
 import { Appointment } from "../types/appointment";
 
 /**
- * Builds a pre-filled URL for the Formsite reschedule form with appointment data
+ * Builds a pre-filled URL for the Formsite form with appointment data
  */
-export function buildRescheduleUrl(appointment: Appointment, action: 'Reschedule' | 'Complete' | 'Cancel' = 'Reschedule'): string {
-  // Base URL for the reschedule form
-  const baseUrl = "https://fs16.formsite.com/Qi21et/appointment-reschedule/fill";
+export function buildFormUrl(appointment: Appointment, action: 'Reschedule' | 'Complete' | 'Cancel' = 'Reschedule'): string {
+  // Select the appropriate base URL based on action
+  let baseUrl = "";
+  
+  if (action === 'Reschedule') {
+    // Use the original reschedule form
+    baseUrl = "https://fs16.formsite.com/Qi21et/appointment-reschedule/fill";
+  } else if (action === 'Complete' || action === 'Cancel') {
+    // Use the new complete/cancel form
+    baseUrl = "https://fs16.formsite.com/Qi21et/appointment-com-can/fill";
+  }
   
   // Map appointment data to form fields
   const params = new URLSearchParams();
@@ -18,60 +26,115 @@ export function buildRescheduleUrl(appointment: Appointment, action: 'Reschedule
   };
   
   // Define mappings for dropdown fields (value to position)
-  // These are sample mappings - you'll need to adjust based on the actual options in your form
+  // Based on the actual form options from the screenshot
   const setByMap: Record<string, string> = {
     "Seth": "1",
-    "John": "2",
-    "Alice": "3",
-    // Add other setBy options and their positions
+    "Sera": "2",
+    // Add other setBy options based on the form
   };
   
   const providerMap: Record<string, string> = {
     "Sera": "1",
-    "Alex": "2",
-    "Michael": "3",
-    // Add other provider options and their positions
+    "Courtesan Couple": "2",
+    "Chloe": "3",
+    "Alexa": "4",
+    "Frenchie": "5",
+    // Add other provider options based on the form
   };
   
   const marketingChannelMap: Record<string, string> = {
     "Private Delights": "1",
-    "Referral": "2",
-    "Social Media": "3",
-    // Add other marketing channel options and their positions
+    "Eros": "2",
+    "Tryst": "3",
+    "P411": "4",
+    "Slixa": "5",
+    "Instagram": "6",
+    "X": "7",
+    "Referral": "8",
+    // Add other marketing channel options based on the form
   };
   
   const callTypeMap: Record<string, string> = {
     "In-Call": "1",
     "Out-Call": "2",
-    // Add other call type options and their positions
   };
   
   const stateMap: Record<string, string> = {
     "Alabama": "1",
     "Alaska": "2",
     "Arizona": "3",
-    // Add more states as needed
+    "Arkansas": "4",
+    "California": "5",
+    "Colorado": "6",
+    "Connecticut": "7",
+    "Delaware": "8",
+    "Florida": "9",
+    "Georgia": "10",
+    "Hawaii": "11",
+    "Idaho": "12",
+    "Illinois": "13",
+    "Indiana": "14",
+    "Iowa": "15",
+    "Kansas": "16",
+    "Kentucky": "17",
+    "Louisiana": "18",
+    "Maine": "19",
+    "Maryland": "20",
+    "Massachusetts": "21",
+    "Michigan": "22",
+    "Minnesota": "23",
+    "Mississippi": "24",
+    "Missouri": "25",
+    "Montana": "26",
+    "Nebraska": "27",
+    "Nevada": "28",
+    "New Hampshire": "29",
+    "New Jersey": "30",
+    "New Mexico": "31",
+    "New York": "32",
+    "North Carolina": "33",
+    "North Dakota": "34",
+    "Ohio": "35",
+    "Oklahoma": "36",
+    "Oregon": "37",
+    "Pennsylvania": "38",
+    "Rhode Island": "39",
+    "South Carolina": "40",
+    "South Dakota": "41",
+    "Tennessee": "42",
+    "Texas": "43",
+    "Utah": "44",
+    "Vermont": "45",
+    "Virginia": "46",
+    "Washington": "47",
+    "West Virginia": "48",
+    "Wisconsin": "49",
+    "Wyoming": "50",
+    "Washington DC": "51"
   };
   
   const inOutGoesToMap: Record<string, string> = {
-    "Option1": "1",
-    "Option2": "2",
-    "Option3": "3",
-    // Add appropriate options for inOutGoesTo
+    "Agency": "1",
+    "Provider": "2",
   };
   
   const depositReceivedByMap: Record<string, string> = {
-    "Cash": "1",
-    "Card": "2",
-    "Digital": "3",
-    // Add appropriate options
+    "Sera": "1",
+    "Seth": "2",
+    "Sasha": "3",
+    "Frenchie": "4",
   };
   
   const paymentProcessMap: Record<string, string> = {
-    "Cash": "1",
-    "Card": "2", 
-    "Digital": "3",
-    // Add appropriate options
+    "Venmo": "1",
+    "Cash App": "2", 
+    "Apple Pay": "3",
+    "BTC": "4",
+    "ETH": "5",
+    "Stripe": "6",
+    "Square": "7",
+    "Bank Wire": "8",
+    "Cash Deposit": "9",
   };
   
   const dispositionStatusMap: Record<string, string> = {
@@ -164,7 +227,7 @@ export function buildRescheduleUrl(appointment: Appointment, action: 'Reschedule
  * Opens the Formsite reschedule form in a new tab/window with "Reschedule" disposition
  */
 export function rescheduleAppointment(appointment: Appointment): void {
-  const url = buildRescheduleUrl(appointment, 'Reschedule');
+  const url = buildFormUrl(appointment, 'Reschedule');
   window.open(url, '_blank');
 }
 
@@ -172,7 +235,7 @@ export function rescheduleAppointment(appointment: Appointment): void {
  * Opens the Formsite form in a new tab/window with "Cancel" disposition
  */
 export function cancelAppointment(appointment: Appointment): void {
-  const url = buildRescheduleUrl(appointment, 'Cancel');
+  const url = buildFormUrl(appointment, 'Cancel');
   window.open(url, '_blank');
 }
 
@@ -180,6 +243,6 @@ export function cancelAppointment(appointment: Appointment): void {
  * Opens the Formsite form in a new tab/window with "Complete" disposition
  */
 export function completeAppointment(appointment: Appointment): void {
-  const url = buildRescheduleUrl(appointment, 'Complete');
+  const url = buildFormUrl(appointment, 'Complete');
   window.open(url, '_blank');
 }
