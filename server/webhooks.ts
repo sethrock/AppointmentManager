@@ -244,7 +244,8 @@ function mapPayloadToAppointment(payload: any): InsertAppointment {
 
 // Main webhook handler
 export async function handleFormSiteWebhook(req: Request, res: Response) {
-  const source = req.params.source as WebhookSource;
+  // Get the source from the custom property or from URL path
+  const source = ((req as any).webhookSource || req.path.split('/').pop()) as WebhookSource;
   const payload = req.body;
   
   console.log(`Received webhook from ${source}`);

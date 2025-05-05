@@ -1,9 +1,10 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { getAppointments, getAppointmentById, getFormItems } from "./formsiteApi";
 import { appointmentFiltersSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
+import { handleFormSiteWebhook } from "./webhooks";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get filtered appointments
@@ -119,6 +120,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
           error: "formsite_api_error"
         });
       }
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Get webhook logs for an appointment
+  app.get("/api/appointments/:id/webhook-logs", async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const logs = await storage.getWebhookLogsByAppointmentId(id);
+      res.json(logs);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Webhook endpoints for Formsite form submissions
+  // Main appointment form webhook
+  app.post("/api/webhooks/appointment", async (req, res, next) => {
+    try {
+      (req as any).webhookSource = "appointment";
+      await handleFormSiteWebhook(req, res);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Appointment reschedule form webhook
+  app.post("/api/webhooks/appointment-reschedule", async (req, res, next) => {
+    try {
+      (req as any).webhookSource = "appointment-reschedule";
+      await handleFormSiteWebhook(req, res);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Appointment complete/cancel form webhook
+  app.post("/api/webhooks/appointment-com-can", async (req, res, next) => {
+    try {
+      (req as any).webhookSource = "appointment-com-can";
+      await handleFormSiteWebhook(req, res);
     } catch (error) {
       next(error);
     }
