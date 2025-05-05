@@ -9,7 +9,8 @@ import {
   TableCell 
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, CheckCircle, AlertCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ExternalLink, CheckCircle, AlertCircle, Calendar, Clock, Ban, CheckSquare, FileX } from "lucide-react";
 import { Appointment } from "@/types/appointment";
 import { formatCurrency } from "@/lib/utils";
 
@@ -78,6 +79,65 @@ export default function AppointmentTable({
   const handleViewDetailsClick = (id: string) => {
     onViewDetails(id);
   };
+  
+  // Helper function to determine appointment status and return appropriate badge
+  const getAppointmentStatusBadge = (appointment: Appointment) => {
+    // Check for explicit status first
+    if (appointment.dispositionStatus) {
+      if (appointment.dispositionStatus === 'Complete') {
+        return (
+          <Badge variant="success" className="flex items-center gap-1">
+            <CheckSquare className="h-3 w-3" />
+            Completed
+          </Badge>
+        );
+      }
+      if (appointment.dispositionStatus === 'Cancel') {
+        return (
+          <Badge variant="destructive" className="flex items-center gap-1">
+            <Ban className="h-3 w-3" />
+            Cancelled
+          </Badge>
+        );
+      }
+      if (appointment.dispositionStatus === 'Reschedule') {
+        return (
+          <Badge variant="warning" className="flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            Rescheduled
+          </Badge>
+        );
+      }
+    }
+    
+    // Check for reschedule indicators
+    if (appointment.updatedStartDate || appointment.updatedStartTime) {
+      return (
+        <Badge variant="warning" className="flex items-center gap-1">
+          <Clock className="h-3 w-3" />
+          Rescheduled
+        </Badge>
+      );
+    }
+    
+    // Check for cancellation
+    if (appointment.whoCanceled || appointment.cancellationDetails) {
+      return (
+        <Badge variant="destructive" className="flex items-center gap-1">
+          <Ban className="h-3 w-3" />
+          Cancelled
+        </Badge>
+      );
+    }
+    
+    // Default to scheduled
+    return (
+      <Badge variant="secondary" className="flex items-center gap-1">
+        <Calendar className="h-3 w-3" />
+        Scheduled
+      </Badge>
+    );
+  };
 
   return (
     <div className="bg-[hsl(var(--surface))] rounded-lg shadow-md overflow-hidden">
@@ -113,6 +173,7 @@ export default function AppointmentTable({
                   </span>
                 )}
               </TableHead>
+              <TableHead>Status</TableHead>
               <TableHead 
                 className="cursor-pointer hover:text-[hsl(var(--primary))]"
                 onClick={() => handleSort("clientName")}
