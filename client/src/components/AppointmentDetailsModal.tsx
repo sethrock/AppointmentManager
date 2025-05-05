@@ -112,14 +112,14 @@ export default function AppointmentDetailsModal({
       rescheduleAppointment(appointment);
     }
   };
-  
+
   const handleComplete = () => {
     // Use completeAppointment function which uses buildFormUrl internally
     if (appointment) {
       completeAppointment(appointment);
     }
   };
-  
+
   const handleCancel = () => {
     // Use cancelAppointment function which uses buildFormUrl internally
     if (appointment) {
@@ -298,7 +298,7 @@ export default function AppointmentDetailsModal({
                     <div className="flex flex-col items-center">
                       <button 
                         className="w-full p-4 bg-[hsl(var(--accent))] hover:bg-[hsl(var(--accent-foreground))] text-[hsl(var(--accent-foreground))] hover:text-[hsl(var(--accent))] rounded-md flex flex-col items-center justify-center transition-colors"
-                        onClick={handleReschedule} // Updated onClick handler
+                        onClick={handleReschedule} 
                       >
                         <CalendarClock className="h-6 w-6 mb-2" />
                         <span>Reschedule</span>
@@ -459,6 +459,12 @@ export default function AppointmentDetailsModal({
                 </div>
               </TabsContent>
             </Tabs>
+            <p className="mt-4">To view database data directly, you can use the following methods:</p>
+            <ol>
+              <li><strong>Application Dashboard (Port 5000):</strong> The appointment data is viewable on the Dashboard page of your application running on port 5000.</li>
+              <li><strong>Direct API Endpoint:</strong> Access the API directly in your browser at: <code>http://localhost:5000/api/appointments</code></li>
+              <li><strong>Replit Database Explorer:</strong> Use Replit's built-in database explorer (accessible via the "Database" tab) to run SQL queries.</li>
+            </ol>
           </div>
         ) : (
           <div className="p-6 text-center">

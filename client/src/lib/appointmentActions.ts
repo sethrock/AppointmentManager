@@ -246,3 +246,84 @@ export function completeAppointment(appointment: Appointment): void {
   const url = buildFormUrl(appointment, 'Complete');
   window.open(url, '_blank');
 }
+import { Appointment } from "@/types/appointment";
+
+/**
+ * Opens the FormSite reschedule form with prefilled data from the appointment
+ */
+export function rescheduleAppointment(appointment: Appointment) {
+  if (!appointment) return;
+  
+  // Base URL for the reschedule form
+  const baseUrl = "https://fs16.formsite.com/Qi21et/appointment-reschedule/fill";
+  
+  // Map appointment data to form fields
+  const params = new URLSearchParams({
+    id0: appointment.setBy || "1",
+    id1: appointment.provider || "1",
+    id2: appointment.marketingChannel || "1",
+    id4: appointment.clientName || "",
+    id5: appointment.clientPhone || "",
+    id7: appointment.clientUsesEmail ? "1" : "0",
+    id24: appointment.clientEmail || "",
+    id17: appointment.callType || "1",
+    id10: appointment.streetAddress || "",
+    id11: appointment.addressLine2 || "",
+    id12: appointment.city || "",
+    id13: appointment.state || "1",
+    id14: appointment.zipCode || "",
+    id21: appointment.outcallDetails || "",
+    id25: appointment.startDate || "",
+    id26: appointment.startTime || "",
+    id27: appointment.endDate || "",
+    id28: appointment.endTime || "",
+    id29: appointment.duration?.toString() || "1",
+    id32: appointment.grossRevenue?.toString() || "",
+    id34: appointment.travel || "",
+    id36: appointment.hostingExpense || "",
+    id37: appointment.inOutGoesTo || "1",
+    id38: appointment.totalExpenses?.toString() || "",
+    id39: appointment.depositAmount?.toString() || "",
+    id40: appointment.depositCalculated || "",
+    id41: appointment.depositReceivedBy || "1",
+    id42: appointment.paymentProcess || "1",
+    id43: appointment.dueToProvider?.toString() || "",
+    id44: appointment.leaveNotes ? "1" : "0",
+    id45: appointment.clientNotes || "",
+    id49: appointment.dispositionStatus || "1",
+    id51: appointment.totalCollectedCash || "",
+    id52: appointment.totalCollectedDigital || "",
+    id53: appointment.totalCollected?.toString() || "",
+    id55: appointment.paymentProcessor || "1",
+    id56: appointment.paymentNotes || "",
+    id57: appointment.seeAgain || "1",
+    id58: appointment.callNotes || "",
+    id61: appointment.updatedStartDate || "",
+    id62: appointment.updatedStartTime || "",
+    id63: appointment.updatedEndDate || "",
+    id64: appointment.updatedEndTime || "",
+    id67: appointment.whoCanceled || "1",
+    id68: appointment.cancellationDetails || "",
+    // Important: Add the reference number to id59
+    id59: appointment.referenceNumber || ""
+  });
+
+  // Open the URL in a new tab
+  window.open(`${baseUrl}?${params.toString()}`, "_blank");
+}
+
+/**
+ * Placeholder for complete appointment functionality
+ */
+export function completeAppointment(appointmentId: string) {
+  console.log("Complete appointment:", appointmentId);
+  // Implement complete appointment functionality
+}
+
+/**
+ * Placeholder for cancel appointment functionality
+ */
+export function cancelAppointment(appointmentId: string) {
+  console.log("Cancel appointment:", appointmentId);
+  // Implement cancel appointment functionality
+}
