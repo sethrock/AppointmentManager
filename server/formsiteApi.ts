@@ -322,7 +322,20 @@ export async function getAppointments(filters?: AppointmentFilters): Promise<App
     
     // Map the results to our Appointment schema
     const appointments = response.results.map((result: any) => {
-      return mapFormsiteDataToAppointment(result);
+      const appointment = mapFormsiteDataToAppointment(result);
+      
+      // Set a default status if it's undefined
+      if (!appointment.dispositionStatus) {
+        // Use result_status if available
+        if (result.result_status === 'Complete') {
+          appointment.dispositionStatus = 'Complete';
+        } else {
+          // Default to Scheduled
+          appointment.dispositionStatus = 'Scheduled';
+        }
+      }
+      
+      return appointment;
     });
     
     // Apply filters if provided (on the client side if we couldn't do it in the API)
@@ -383,7 +396,20 @@ export async function getAppointmentById(id: string): Promise<Appointment | null
         return null;
       }
       
-      return mapFormsiteDataToAppointment(result);
+      const appointment = mapFormsiteDataToAppointment(result);
+      
+      // Set a default status if it's undefined
+      if (!appointment.dispositionStatus) {
+        // Use result_status if available
+        if (result.result_status === 'Complete') {
+          appointment.dispositionStatus = 'Complete';
+        } else {
+          // Default to Scheduled
+          appointment.dispositionStatus = 'Scheduled';
+        }
+      }
+      
+      return appointment;
     } catch (directError) {
       console.error(`Error in direct fetch for appointment ${id}:`, directError);
       return null; // Return null instead of throwing to allow fallback
