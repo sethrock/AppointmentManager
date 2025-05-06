@@ -214,7 +214,19 @@ function mapFormsiteDataToAppointment(result: any): Appointment {
       // Notes and status
       leaveNotes: findItemById("44"),
       clientNotes: findItemById("45"),
-      dispositionStatus: findItemById("49"),
+      dispositionStatus: (() => {
+        const status = findItemById("49");
+        // Standardize disposition status
+        if (status === '1' || status === 'Complete') {
+          return 'Complete';
+        } else if (status === '3' || status === 'Cancel' || status === 'Canceled') {
+          return 'Canceled';
+        } else if (status === '2' || status === 'Reschedule' || status === 'Rescheduled') {
+          return 'Rescheduled';
+        } else {
+          return status; // return original if it doesn't match any known value
+        }
+      })(),
       
       // Payment details
       totalCollectedCash: findItemById("51"),

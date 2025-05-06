@@ -99,10 +99,13 @@ async function processCompleteOrCancelWebhook(payload: any): Promise<string> {
     const dispositionStatus = payload.id49 || payload.disposition_status;
     let action = 'unknown';
     
+    // Standardize disposition status - using same logic as in formsiteApi.ts
     if (dispositionStatus === '1' || dispositionStatus === 'Complete') {
       action = 'Complete';
     } else if (dispositionStatus === '3' || dispositionStatus === 'Cancel' || dispositionStatus === 'Canceled') {
       action = 'Canceled';
+    } else if (dispositionStatus === '2' || dispositionStatus === 'Reschedule' || dispositionStatus === 'Rescheduled') {
+      action = 'Rescheduled';
     }
     
     // Build update data
@@ -212,7 +215,19 @@ function mapPayloadToAppointment(payload: any): InsertAppointment {
     clientNotes: getField('id45', 'client_notes'),
     
     // Disposition
-    dispositionStatus: getField('id49', 'disposition_status'),
+    dispositionStatus: (() => {
+      const status = getField('id49', 'disposition_status');
+      // Standardize disposition status
+      if (status === '1' || status === 'Complete') {
+        return 'Complete';
+      } else if (status === '3' || status === 'Cancel' || status === 'Canceled') {
+        return 'Canceled';
+      } else if (status === '2' || status === 'Reschedule' || status === 'Rescheduled') {
+        return 'Rescheduled';
+      } else {
+        return status; // return original if it doesn't match any known value
+      }
+    })(),
     
     // Additional details
     totalCollectedCash: getField('id51', 'total_collected_cash'),
