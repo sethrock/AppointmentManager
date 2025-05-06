@@ -83,39 +83,17 @@ export default function Analytics() {
     }
   });
   
-  // Sample data for development - will be replaced with actual API data
-  // This is only for UI development and will be removed once API is implemented
-  const sampleData = {
-    summary: {
-      totalAppointments: 42,
-      completedAppointments: 35,
-      canceledAppointments: 7,
-      totalRevenue: 12600.00,
-      averageRevenue: 360.00
-    },
-    timeframeData: [
-      { label: 'Week 1', appointments: 9, revenue: 2700 },
-      { label: 'Week 2', appointments: 12, revenue: 3600 },
-      { label: 'Week 3', appointments: 8, revenue: 2400 },
-      { label: 'Week 4', appointments: 13, revenue: 3900 }
-    ],
-    providerPerformance: [
-      { provider: 'Sera', appointments: 18, revenue: 5400, cancellationRate: 0.05 },
-      { provider: 'Courtesan Couple', appointments: 8, revenue: 3200, cancellationRate: 0.12 },
-      { provider: 'Chloe', appointments: 9, revenue: 2700, cancellationRate: 0.11 },
-      { provider: 'Alexa', appointments: 7, revenue: 1300, cancellationRate: 0.28 }
-    ],
-    marketingChannels: [
-      { channel: 'Private Delights', appointments: 16, revenue: 4800, percentage: 38.1 },
-      { channel: 'Eros', appointments: 10, revenue: 3000, percentage: 23.8 },
-      { channel: 'Tryst', appointments: 8, revenue: 2400, percentage: 19.0 },
-      { channel: 'Referral', appointments: 5, revenue: 1500, percentage: 11.9 },
-      { channel: 'Other', appointments: 3, revenue: 900, percentage: 7.2 }
-    ]
-  };
-
-  // Will use actual data when API is implemented
-  const analytics = data || sampleData;
+  // Wait for data from the API, no fallback to sample data
+  const analytics = data;
+  
+  // If no data is available, show loading screen
+  if (!analytics) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="w-16 h-16 border-t-4 border-b-4 border-primary rounded-full animate-spin"></div>
+      </div>
+    );
+  }
   
   // Colors for charts
   const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c', '#d0ed57'];
@@ -216,13 +194,17 @@ export default function Analytics() {
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Growth</CardTitle>
+            <CardTitle className="text-sm font-medium">Cancellation Rate</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+12.5%</div>
+            <div className="text-2xl font-bold">
+              {analytics.summary.totalAppointments > 0 
+                ? `${Math.round((analytics.summary.canceledAppointments / analytics.summary.totalAppointments) * 100)}%` 
+                : '0%'}
+            </div>
             <p className="text-xs text-muted-foreground">
-              Compared to previous {timeframe}
+              {analytics.summary.canceledAppointments} out of {analytics.summary.totalAppointments} appointments
             </p>
           </CardContent>
         </Card>
@@ -360,7 +342,7 @@ export default function Analytics() {
                       nameKey="channel"
                       label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
                     >
-                      {analytics.marketingChannels.map((entry, index) => (
+                      {analytics.marketingChannels.map((entry: any, index: number) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
