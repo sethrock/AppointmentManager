@@ -63,7 +63,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       try {
         const appointments = await getAppointments(filters);
-        res.json(appointments);
+        
+        // Ensure all appointments have a disposition status
+        const processedAppointments = appointments.map(appointment => {
+          if (!appointment.dispositionStatus) {
+            console.log(`Setting default status for appointment ${appointment.id}`);
+            return {
+              ...appointment,
+              dispositionStatus: 'Scheduled' // Default status
+            };
+          }
+          return appointment;
+        });
+        
+        res.json(processedAppointments);
       } catch (apiError) {
         console.error("Error fetching appointments:", apiError);
         // Return the actual error for debugging the API connection
@@ -91,7 +104,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(404).json({ message: "Appointment not found" });
         }
         
-        res.json(appointment);
+        // Ensure appointment has a disposition status
+        if (!appointment.dispositionStatus) {
+          console.log(`Setting default status for individual appointment ${appointment.id}`);
+          res.json({
+            ...appointment,
+            dispositionStatus: 'Scheduled' // Default status
+          });
+        } else {
+          res.json(appointment);
+        }
       } catch (apiError) {
         console.error(`Error fetching appointment ${id}:`, apiError);
         return res.status(500).json({ 
@@ -156,7 +178,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { timeframe = 'month', start, end } = req.query;
       
       // Get all appointments for analysis
-      const appointments = await getAppointments();
+      const rawAppointments = await getAppointments();
+      
+      // Ensure all appointments have a disposition status for analytics
+      const appointments = rawAppointments.map(appointment => {
+        if (!appointment.dispositionStatus) {
+          return {
+            ...appointment,
+            dispositionStatus: 'Scheduled' // Default status
+          };
+        }
+        return appointment;
+      });
       
       // Filter appointments based on date range if provided
       const filteredAppointments = start && end
