@@ -92,7 +92,7 @@ export default function AppointmentTable({
           </Badge>
         );
       }
-      if (appointment.dispositionStatus === 'Cancel') {
+      if (appointment.dispositionStatus === 'Cancel' || appointment.dispositionStatus === 'Canceled') {
         return (
           <Badge variant="destructive" className="flex items-center gap-1">
             <Ban className="h-3 w-3" />
