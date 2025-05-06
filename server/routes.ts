@@ -7,6 +7,48 @@ import { fromZodError } from "zod-validation-error";
 import { handleFormSiteWebhook } from "./webhooks";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Debug endpoint to get raw data from Formsite
+  app.get("/api/debug/appointments", async (req, res) => {
+    try {
+      const endpoint = "/{user_dir}/forms/{form_dir}/results";
+      const params = {
+        nocache: Date.now().toString()
+      };
+      const response = await fetch(`https://fs16.formsite.com/api/v2/Qi21et/forms/appointment/results?nocache=${Date.now()}`, {
+        headers: {
+          'Authorization': `Bearer ${process.env.FORMSITE_API_TOKEN}`,
+          'Accept': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      // Return raw data for debugging
+      res.json({
+        rawData: data,
+        formattedData: data.results.map((result: any) => {
+          // Find the ID 49 field (disposition status)
+          let status = "Unknown";
+          if (result.items && Array.isArray(result.items)) {
+            const statusItem = result.items.find((item: any) => item.id === "49");
+            status = statusItem ? statusItem.value : "Not found";
+          }
+          
+          return {
+            id: result.id,
+            status: status,
+            resultStatus: result.result_status,
+            dateUpdate: result.date_update
+          };
+        })
+      });
+    } catch (error) {
+      res.status(500).json({ error: error instanceof Error ? error.message : "Unknown error" });
+    }
+  });
   // Get filtered appointments
   app.get("/api/appointments", async (req, res, next) => {
     try {
@@ -35,35 +77,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get appointment by ID
-  app.get("/api/appointments/:id", async (req, res, next) => {
-    try {
-      const { id } = req.params;
-      
-      try {
-        // Get all appointments (this will use the cache we built in the API)
-        const allAppointments = await getAppointments();
-        
-        // Find the appointment directly from the list
-        const appointment = allAppointments.find(app => app.id === id);
-        
-        if (!appointment) {
-          return res.status(404).json({ message: "Appointment not found" });
-        }
-        
-        res.json(appointment);
-      } catch (apiError) {
-        console.error(`Error fetching appointment ${id}:`, apiError);
-        // Return a 404 instead of 500 for a better UX when appointment not found
-        return res.status(404).json({ 
-          message: "Appointment not found",
-          error: "not_found"
-        });
-      }
-    } catch (error) {
-      next(error);
-    }
-  });
+
 
   // Get appointment by ID
   app.get("/api/appointments/:id", async (req, res, next) => {

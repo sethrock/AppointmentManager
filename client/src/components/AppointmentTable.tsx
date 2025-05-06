@@ -84,7 +84,11 @@ export default function AppointmentTable({
   const getAppointmentStatusBadge = (appointment: Appointment) => {
     // Check for disposition status as the source of truth
     if (appointment.dispositionStatus) {
-      if (appointment.dispositionStatus === 'Complete') {
+      // Standardize status value for comparison to handle variations
+      const status = appointment.dispositionStatus.toLowerCase();
+      
+      // Check for completed status (Complete, 1)
+      if (status === 'complete' || status === '1') {
         return (
           <Badge variant="outline" className="flex items-center gap-1 bg-green-100 text-green-700 hover:bg-green-200">
             <CheckSquare className="h-3 w-3" />
@@ -92,7 +96,9 @@ export default function AppointmentTable({
           </Badge>
         );
       }
-      if (appointment.dispositionStatus === 'Canceled') {
+      
+      // Check for canceled status (Canceled, Cancel, 3)
+      if (status === 'canceled' || status === 'cancel' || status === '3') {
         return (
           <Badge variant="destructive" className="flex items-center gap-1">
             <Ban className="h-3 w-3" />
@@ -100,7 +106,9 @@ export default function AppointmentTable({
           </Badge>
         );
       }
-      if (appointment.dispositionStatus === 'Reschedule' || appointment.dispositionStatus === 'Rescheduled') {
+      
+      // Check for rescheduled status (Reschedule, Rescheduled, 2)
+      if (status === 'reschedule' || status === 'rescheduled' || status === '2') {
         return (
           <Badge variant="outline" className="flex items-center gap-1 bg-amber-100 text-amber-700 hover:bg-amber-200">
             <Clock className="h-3 w-3" />
@@ -108,6 +116,9 @@ export default function AppointmentTable({
           </Badge>
         );
       }
+      
+      // Log unexpected status values for debugging
+      console.log(`Unhandled status value: "${appointment.dispositionStatus}"`);
     }
     
     // Default to scheduled
