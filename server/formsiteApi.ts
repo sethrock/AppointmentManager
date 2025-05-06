@@ -311,6 +311,14 @@ export async function getAppointments(filters?: AppointmentFilters): Promise<App
     }
     
     console.log(`Retrieved ${filteredAppointments.length} appointments`);
+    
+    // DEBUG: Log disposition statuses to see what's coming from the API
+    console.log("DISPOSITION STATUSES:", filteredAppointments.map(app => ({
+      id: app.id,
+      clientName: app.clientName,
+      status: app.dispositionStatus
+    })));
+    
     return filteredAppointments;
   } catch (error) {
     console.error("Error fetching appointments:", error);
