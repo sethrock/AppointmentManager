@@ -39,6 +39,8 @@ export default function AppointmentDetailsModal({
   } = useQuery<Appointment>({
     queryKey: [`/api/appointments/${appointmentId}`],
     retry: false, // Don't retry on 404s
+    refetchOnWindowFocus: true, // Always refetch when window is focused
+    refetchOnMount: true, // Refetch on component mount
   });
 
   // Type cast the appointment data to ensure TypeScript safety

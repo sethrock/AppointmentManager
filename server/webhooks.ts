@@ -288,9 +288,14 @@ export async function handleFormSiteWebhook(req: Request, res: Response) {
       case 'appointment-com-can':
         result = await processCompleteOrCancelWebhook(payload);
         // Action will depend on the form submission - determined inside the function
-        action = payload.id49 === '1' || payload.disposition_status === 'Complete' 
-          ? 'complete' 
-          : 'cancel';
+        const dispositionStatus = payload.id49 || payload.disposition_status;
+        if (dispositionStatus === '1' || dispositionStatus === 'Complete') {
+          action = 'complete';
+        } else if (dispositionStatus === '3' || dispositionStatus === 'Cancel' || dispositionStatus === 'Canceled') {
+          action = 'cancel';
+        } else {
+          action = 'unknown';
+        }
         break;
       default:
         throw new Error(`Unknown webhook source: ${source}`);

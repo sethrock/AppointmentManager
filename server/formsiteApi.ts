@@ -325,7 +325,12 @@ export async function getAppointmentById(id: string): Promise<Appointment | null
       // GET https://{server}.formsite.com/api/v2/{user_dir}/forms/{form_dir}/results/{result_id}
       const endpoint = `/{user_dir}/forms/{form_dir}/results/${id}`;
       
-      const result = await formsiteRequest(endpoint);
+      // Include nocache parameter to prevent caching
+      const params = {
+        nocache: Date.now().toString()
+      };
+      
+      const result = await formsiteRequest(endpoint, "GET", params);
       console.log(`Retrieved appointment data for ID: ${id} via direct API call`);
       
       if (!result) {
