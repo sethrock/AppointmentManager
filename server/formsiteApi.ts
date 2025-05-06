@@ -215,17 +215,43 @@ function mapFormsiteDataToAppointment(result: any): Appointment {
       leaveNotes: findItemById("44"),
       clientNotes: findItemById("45"),
       dispositionStatus: (() => {
+        // Try to get disposition status from item 49
         const status = findItemById("49");
-        // Standardize disposition status
-        if (status === '1' || status === 'Complete') {
-          return 'Complete';
-        } else if (status === '3' || status === 'Cancel' || status === 'Canceled') {
-          return 'Canceled';
-        } else if (status === '2' || status === 'Reschedule' || status === 'Rescheduled') {
-          return 'Rescheduled';
-        } else {
-          return status; // return original if it doesn't match any known value
+        
+        // If we have a valid status, standardize it
+        if (status) {
+          if (status === '1' || status === 'Complete') {
+            return 'Complete';
+          } else if (status === '3' || status === 'Cancel' || status === 'Canceled') {
+            return 'Canceled';
+          } else if (status === '2' || status === 'Reschedule' || status === 'Rescheduled') {
+            return 'Rescheduled';
+          } else {
+            return status; // return original if it doesn't match any known value
+          }
         }
+        
+        // If no status is found in item 49, try to use the result_status field
+        if (result.result_status) {
+          if (result.result_status === 'Complete') {
+            return 'Complete';
+          } else if (result.result_status.includes('Cancel')) {
+            return 'Canceled';
+          }
+        }
+        
+        // If there's a whoCanceled field populated, set status to Canceled
+        if (findItemById("67")) {
+          return 'Canceled';
+        }
+        
+        // If updated dates are present, consider it Rescheduled
+        if (findItemById("61") || findItemById("62")) {
+          return 'Rescheduled';
+        }
+        
+        // Default to Scheduled if we can't determine
+        return 'Scheduled';
       })(),
       
       // Payment details
