@@ -391,7 +391,7 @@ export default function Analytics() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {analytics.marketingChannels.map((channel, idx) => (
+                {analytics.marketingChannels.map((channel: any, idx: number) => (
                   <div key={channel.channel} className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="font-medium">{channel.channel}</span>
