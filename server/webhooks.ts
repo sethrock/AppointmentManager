@@ -101,8 +101,8 @@ async function processCompleteOrCancelWebhook(payload: any): Promise<string> {
     
     if (dispositionStatus === '1' || dispositionStatus === 'Complete') {
       action = 'Complete';
-    } else if (dispositionStatus === '3' || dispositionStatus === 'Cancel') {
-      action = 'Cancel';
+    } else if (dispositionStatus === '3' || dispositionStatus === 'Cancel' || dispositionStatus === 'Canceled') {
+      action = 'Canceled';
     }
     
     // Build update data
@@ -111,7 +111,7 @@ async function processCompleteOrCancelWebhook(payload: any): Promise<string> {
     };
     
     // For cancellations, add cancellation details
-    if (action === 'Cancel') {
+    if (action === 'Canceled') {
       updateData.whoCanceled = payload.id67 || payload.who_canceled;
       updateData.cancellationDetails = payload.id68 || payload.cancellation_details;
     }

@@ -267,7 +267,8 @@ export async function getAppointments(filters?: AppointmentFilters): Promise<App
     
     // Set up parameters for pagination and filter data
     const params: Record<string, string> = {
-      limit: "100" // Maximum allowed by API
+      limit: "100", // Maximum allowed by API
+      nocache: Date.now().toString() // Prevent caching by adding a timestamp
     };
     
     // Add filter-specific search parameters if provided

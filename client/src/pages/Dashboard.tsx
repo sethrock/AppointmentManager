@@ -27,7 +27,10 @@ export default function Dashboard() {
     isRefetching
   } = useQuery({
     queryKey: ['/api/appointments', filters],
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    staleTime: 0, // Data is immediately stale
+    cacheTime: 0, // Don't cache data
   });
 
   // Handle filter changes
